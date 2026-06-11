@@ -1,0 +1,58 @@
+---
+import { codeThemes } from '../lib/codeThemes';
+import { sampleLanguages } from '../lib/sampleCode';
+
+const sortedThemes = [...codeThemes].sort((a, b) => {
+  if (a.italic && !b.italic) return -1;
+  if (!a.italic && b.italic) return 1;
+  return 0;
+});
+---
+
+<div
+  class="flex w-full flex-row gap-4 overflow-x-auto whitespace-nowrap border-b border-slate-300 bg-slate-100 px-4 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+>
+  <slot />
+  <label class="flex items-center gap-2">
+    <span>Theme:</span>
+    <select
+      id="ctrl-theme"
+      class="min-h-9 min-w-24 rounded-md border border-slate-300 bg-white px-2 dark:border-slate-700 dark:bg-slate-950"
+    >
+      {sortedThemes.map((theme) => <option value={theme.slug}>{theme.displayName}</option>)}
+    </select>
+  </label>
+  <label class="flex items-center gap-2">
+    <span>Language:</span>
+    <select
+      id="ctrl-language"
+      class="min-h-9 min-w-28 rounded-md border border-slate-300 bg-white px-2 dark:border-slate-700 dark:bg-slate-950"
+    >
+      {sampleLanguages.map((language) => <option value={language.id}>{language.displayName}</option>)}
+    </select>
+  </label>
+  <label class="flex items-center gap-2">
+    <span>Font Size:</span>
+    <input
+      id="ctrl-font-size-number"
+      class="min-h-9 w-16 rounded-md border border-slate-300 bg-white px-2 dark:border-slate-700 dark:bg-slate-950"
+      type="number"
+      min="8"
+      max="36"
+    />
+    <input id="ctrl-font-size-range" class="w-40 accent-blue-600 lg:w-60" type="range" max="36" min="8" step="1" />
+  </label>
+  <label class="flex items-center gap-2">
+    <input id="ctrl-ligatures" class="h-4 w-4 accent-blue-600" type="checkbox" />
+    <span>Font Ligatures</span>
+  </label>
+  <label class="flex items-center gap-2">
+    <input id="ctrl-opentype" class="h-4 w-4 accent-blue-600" type="checkbox" />
+    <span>OpenType Features</span>
+  </label>
+</div>
+
+<script>
+  import { initControls } from '../scripts/controls';
+  document.addEventListener('astro:page-load', initControls);
+</script>

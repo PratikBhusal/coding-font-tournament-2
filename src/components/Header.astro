@@ -1,0 +1,86 @@
+---
+type Props = {
+  path?: string;
+  canToggleSidebar?: boolean;
+};
+
+const { path = '/', canToggleSidebar = true } = Astro.props;
+---
+
+<header
+  class="z-30 flex items-center justify-between gap-4 border-b border-slate-300 bg-slate-100 p-4 dark:border-slate-700 dark:bg-slate-900"
+>
+  <div class="flex items-center gap-3">
+    <div class="relative md:hidden">
+      <button
+        id="app-nav-toggle"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+        title="Menu"
+        class="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-slate-300 bg-white hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:hover:bg-slate-800"
+      >
+        <span class="icon-[lucide--menu] h-5 w-5"></span>
+      </button>
+      <nav
+        id="app-nav-menu"
+        hidden
+        class="absolute left-0 top-full z-40 mt-2 flex min-w-40 flex-col overflow-hidden rounded-md border border-slate-300 bg-white font-mono font-semibold shadow-lg dark:border-slate-700 dark:bg-slate-950"
+      >
+        <a
+          class={`px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 ${path === '/' ? 'bg-slate-100 dark:bg-slate-800' : ''}`}
+          href="/"
+        >
+          Tournament
+        </a>
+        <a
+          class={`px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 ${path === '/browse' ? 'bg-slate-100 dark:bg-slate-800' : ''}`}
+          href="/browse"
+        >
+          Browse
+        </a>
+      </nav>
+    </div>
+    {
+      canToggleSidebar && (
+        <button
+          id="app-menu-toggle"
+          type="button"
+          aria-label="Toggle sidebar"
+          title="Toggle sidebar"
+          class="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-slate-300 bg-white hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:hover:bg-slate-800"
+        >
+          <span class="icon-[lucide--settings] h-5 w-5" />
+        </button>
+      )
+    }
+  </div>
+
+  <nav class="hidden items-center gap-2 font-mono text-lg font-semibold md:flex">
+    <a class={`px-3 py-1 ${path === '/' ? "before:content-['<'] after:content-['>']" : ''}`} href="/">
+      Tournament
+    </a>
+    <a
+      class={`px-3 py-1 ${path === '/browse' ? "before:content-['<'] after:content-['>']" : ''}`}
+      href="/browse"
+    >
+      Browse
+    </a>
+  </nav>
+
+  <button
+    id="app-theme-toggle"
+    type="button"
+    aria-label="Toggle theme"
+    title="Toggle light/dark theme"
+    class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-300 bg-white text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+  >
+    <span class="icon-[lucide--swatch-book] h-5 w-5"></span>
+  </button>
+</header>
+
+<script>
+  import { initHeader } from '../scripts/header';
+  initHeader();
+  document.addEventListener('astro:page-load', initHeader);
+</script>

@@ -1,0 +1,16 @@
+---
+// Filters the static font table (rows carry data-search) — no framework, no shared store.
+---
+
+<input
+  id="font-search"
+  class="min-h-9 w-full max-w-xl rounded-md border border-slate-300 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-950"
+  type="search"
+  placeholder="Search ..."
+/>
+
+<script>
+  import { initSearch } from '../scripts/searchBox';
+  initSearch();
+  document.addEventListener('astro:page-load', initSearch);
+</script>

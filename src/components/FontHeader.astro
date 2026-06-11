@@ -1,0 +1,62 @@
+---
+import type { CodingFont } from '../lib/codingFonts';
+import { getFontDisplayName, getFontStyle } from '../lib/fontFeatures';
+import { getFontPath } from '../lib/routes';
+
+type Props = {
+  font: CodingFont;
+  maximizeHref?: string;
+};
+
+const { font, maximizeHref } = Astro.props;
+const displayName = getFontDisplayName(font);
+const nameStyle = getFontStyle(font);
+---
+
+<div class="flex min-h-9 items-center justify-between gap-3">
+  {
+    font.isSystemFont ? (
+      <span class="truncate whitespace-nowrap text-lg font-bold" style={nameStyle}>{displayName}</span>
+    ) : (
+      <a class="truncate whitespace-nowrap text-lg font-bold hover:underline" style={nameStyle} href={getFontPath(font.family)}>
+        {displayName}
+      </a>
+    )
+  }
+  <div class="inline-flex overflow-hidden rounded-md border border-slate-300 dark:border-slate-700">
+    {
+      !font.isSystemFont && (
+        <>
+          <a
+            href={font.siteUrl}
+            target="_blank"
+            class="inline-flex h-9 items-center gap-2 border-r border-slate-300 px-3 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+            title={`Visit ${displayName}`}
+          >
+            <span class="icon-[lucide--external-link] h-5 w-5" />
+            <span class="hidden 2xl:block">Visit {displayName}</span>
+          </a>
+          <a
+            href={font.downloadUrl}
+            class="inline-flex h-9 items-center gap-2 border-r border-slate-300 px-3 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+            title={`Download ${displayName}`}
+          >
+            <span class="icon-[lucide--download] h-5 w-5" />
+            <span class="hidden 2xl:block">Download {displayName}</span>
+          </a>
+        </>
+      )
+    }
+    {
+      maximizeHref && (
+        <a
+          href={maximizeHref}
+          class="inline-flex h-9 items-center px-3 hover:bg-slate-100 dark:hover:bg-slate-800"
+          title="Open font page"
+        >
+          <span class="icon-[lucide--maximize-2] h-5 w-5" />
+        </a>
+      )
+    }
+  </div>
+</div>

@@ -1,0 +1,81 @@
+---
+import type { CodingFont } from '../lib/codingFonts';
+import { getFontDisplayName, getFontStyle } from '../lib/fontFeatures';
+import { getFontPath } from '../lib/routes';
+import CodeSpecimen from './CodeSpecimen.astro';
+
+type Props = {
+  /** Prefix for the JS-addressable element ids: `${prefix}-name`, `-visit`, etc. */
+  prefix: string;
+  font: CodingFont;
+  /** Root element id (used to show/hide the compare column). */
+  id?: string;
+  hidden?: boolean;
+  /** Render a close button (compare column only). */
+  showClose?: boolean;
+};
+
+const { prefix, font, id, hidden = false, showClose = false } = Astro.props;
+const actionClass =
+  'inline-flex h-9 items-center gap-2 px-3 hover:bg-slate-100 dark:hover:bg-slate-800';
+const dividerClass = 'border-r border-slate-300 dark:border-slate-700';
+---
+
+<div id={id} hidden={hidden} class="flex min-h-0 flex-col gap-4">
+  <div class="flex min-h-9 items-center justify-between gap-3">
+    <span
+      id={`${prefix}-name`}
+      data-family={font.family}
+      style={getFontStyle(font)}
+      class="truncate whitespace-nowrap text-lg font-bold"
+    >
+      {getFontDisplayName(font)}
+    </span>
+    <div class="inline-flex overflow-hidden rounded-md border border-slate-300 dark:border-slate-700">
+      <a
+        id={`${prefix}-visit`}
+        href={font.siteUrl}
+        target="_blank"
+        hidden={font.isSystemFont}
+        class={`${actionClass} ${dividerClass}`}
+        title="Visit site"
+      >
+        <span class="icon-[lucide--external-link] h-5 w-5"></span>
+      </a>
+      <a
+        id={`${prefix}-download`}
+        href={font.downloadUrl}
+        hidden={font.isSystemFont}
+        class={`${actionClass} ${dividerClass}`}
+        title="Download"
+      >
+        <span class="icon-[lucide--download] h-5 w-5"></span>
+      </a>
+      <a
+        id={`${prefix}-maximize`}
+        href={getFontPath(font.family)}
+        class={`${actionClass} ${showClose ? dividerClass : ''}`}
+        title="Open font page"
+      >
+        <span class="icon-[lucide--maximize-2] h-5 w-5"></span>
+      </a>
+      {
+        showClose && (
+          <button
+            id={`${prefix}-close`}
+            type="button"
+            class={`${actionClass} cursor-pointer`}
+            title="Close comparison"
+          >
+            <span class="icon-[lucide--x] h-5 w-5" />
+          </button>
+        )
+      }
+    </div>
+  </div>
+  <CodeSpecimen
+    id={`${prefix}-specimen`}
+    font={font}
+    class="min-h-0 overflow-hidden rounded-lg border border-slate-300 dark:border-slate-700"
+  />
+</div>

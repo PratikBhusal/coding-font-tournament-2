@@ -1,0 +1,135 @@
+---
+import type { CodingFont } from '../lib/codingFonts';
+import { getCssFontFamily, getFontDisplayName, getFontFeatures, getFontStyle } from '../lib/fontFeatures';
+import { getFontPath, getFontSlug } from '../lib/routes';
+
+type Props = {
+  fonts: CodingFont[];
+  baseFont?: CodingFont;
+  activeFamily?: string;
+  showNames?: boolean;
+  /** Browse mode: clicking a row previews the font in place instead of navigating. */
+  selectable?: boolean;
+};
+
+const { fonts, baseFont, activeFamily, showNames = true, selectable = false } = Astro.props;
+
+const compareHref = (font: CodingFont) =>
+  baseFont && baseFont.family !== font.family
+    ? `${getFontPath(baseFont.family)}/${getFontSlug(font.family)}`
+    : undefined;
+
+// Data the browse selector script needs to restyle the specimen + header in place.
+const selectAttrs = (font: CodingFont) =>
+  selectable
+    ? {
+        'data-family': font.family,
+        'data-css-family': getCssFontFamily(font),
+        'data-feat-both': getFontFeatures(font, true, true) || 'normal',
+        'data-feat-lig': getFontFeatures(font, false, true) || 'normal',
+        'data-feat-ot': getFontFeatures(font, true, false) || 'normal',
+        'data-display-name': getFontDisplayName(font),
+        'data-slug': getFontPath(font.family),
+        'data-site-url': font.siteUrl,
+        'data-download-url': font.downloadUrl,
+        'data-system': font.isSystemFont ? '1' : '0'
+      }
+    : {};
+---
+
+<div
+  id="font-table"
+  class="overflow-auto rounded-lg border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-950"
+>
+  <table class="w-full border-collapse whitespace-nowrap text-left">
+    <thead>
+      <tr
+        class="border-b border-slate-300 text-xs uppercase text-slate-500 dark:border-slate-700 dark:text-slate-400"
+      >
+        <th class="px-3 py-2">Font Family</th>
+        <th class="px-3 py-2">Preview</th>
+        <th class="px-3 py-2">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        fonts.map((font) => (
+          <tr
+            data-search={`${font.family} ${getFontDisplayName(font)}`.toLowerCase()}
+            {...selectAttrs(font)}
+            class={`border-b border-slate-200 hover:bg-blue-50 dark:border-slate-800 dark:hover:bg-blue-950 ${
+              selectable ? 'cursor-pointer' : ''
+            } ${activeFamily === font.family ? 'bg-blue-100 dark:bg-blue-900/40' : ''}`}
+          >
+            <td class="max-w-36 truncate px-3 py-2 align-middle" style={getFontStyle(font)}>
+              {selectable ? (
+                <span class="block truncate">{showNames ? getFontDisplayName(font) : 'ABC abc 123'}</span>
+              ) : (
+                <a class="block truncate hover:underline" href={getFontPath(font.family)}>
+                  {showNames ? getFontDisplayName(font) : 'ABC abc 123'}
+                </a>
+              )}
+            </td>
+            <td class="px-3 py-2 align-middle">
+              {selectable ? (
+                <a
+                  data-compare-slug={getFontSlug(font.family)}
+                  class="compare-link inline-flex min-h-8 items-center gap-2 rounded-md border border-slate-300 px-2 text-sm hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+                >
+                  <span class="icon-[lucide--columns-2] h-4 w-4" />
+                  <span>Compare</span>
+                </a>
+              ) : compareHref(font) ? (
+                <a
+                  href={compareHref(font)}
+                  class="inline-flex min-h-8 items-center gap-2 rounded-md border border-slate-300 px-2 text-sm hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+                >
+                  <span class="icon-[lucide--columns-2] h-4 w-4" />
+                  <span>Compare</span>
+                </a>
+              ) : (
+                <span class="text-xs text-slate-400">—</span>
+              )}
+            </td>
+            <td class="px-3 py-2 align-middle">
+              <div class="inline-flex overflow-hidden rounded-md border border-slate-300 dark:border-slate-700">
+                {!font.isSystemFont && (
+                  <>
+                    <a
+                      href={font.siteUrl}
+                      target="_blank"
+                      class="inline-flex h-8 items-center border-r border-slate-300 px-2 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+                      title="Visit site"
+                    >
+                      <span class="icon-[lucide--external-link] h-4 w-4" />
+                    </a>
+                    <a
+                      href={font.downloadUrl}
+                      class="inline-flex h-8 items-center border-r border-slate-300 px-2 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+                      title="Download"
+                    >
+                      <span class="icon-[lucide--download] h-4 w-4" />
+                    </a>
+                  </>
+                )}
+                <a
+                  href={getFontPath(font.family)}
+                  class="inline-flex h-8 items-center px-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  title="Open font page"
+                >
+                  <span class="icon-[lucide--maximize-2] h-4 w-4" />
+                </a>
+              </div>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+    <tfoot>
+      <tr class="text-sm font-semibold">
+        <th class="px-3 py-2">Total</th>
+        <td class="px-3 py-2 align-middle" colspan="2">{fonts.length} fonts</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>

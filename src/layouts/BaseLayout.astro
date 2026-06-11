@@ -1,0 +1,95 @@
+---
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import { Seo } from 'astro-seo-meta';
+
+type Props = {
+  title: string;
+  description?: string;
+  keywords?: string[];
+};
+
+const defaultDescription =
+  'Find your favorite coding font through head-to-head matchups, then browse and compare monospace fonts with live code specimens.';
+const defaultKeywords = ['coding fonts', 'monospace fonts', 'programming fonts', 'font comparison'];
+
+const { title, description = defaultDescription, keywords = defaultKeywords } = Astro.props;
+---
+
+<html lang="en" class="h-full overflow-hidden">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <!-- Warm up the font hosts and load the Google Fonts CSS from the HTML (not a CSS
+         @import) so it's discovered early and doesn't extend the critical chain. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Anonymous+Pro:ital@0;1&family=Azeret+Mono:ital@0;1&family=B612+Mono:ital@0;1&family=Courier+Prime:ital@0;1&family=Cousine:ital@0;1&family=Cutive+Mono&family=DM+Mono:ital@0;1&family=Fira+Code&family=Fira+Mono&family=IBM+Plex+Mono:ital@0;1&family=Inconsolata&family=Major+Mono+Display&family=Nanum+Gothic+Coding&family=Noto+Sans+Mono&family=Nova+Mono&family=Overpass+Mono&family=Oxygen+Mono&family=PT+Mono&family=Red+Hat+Mono&family=Roboto+Mono:ital@0;1&family=Share+Tech+Mono&family=Source+Code+Pro:ital@0;1&family=Space+Mono:ital@0;1&family=Syne+Mono&family=Ubuntu+Mono:ital@0;1&family=VT323&family=Victor+Mono:ital@0;1&family=Xanh+Mono:ital@0;1&family=Atkinson+Hyperlegible+Mono:ital,wght@0,200..800;1,200..800&display=swap"
+    />
+    <!-- Declared before CSS so browsers (e.g. Firefox for Android) don't force-dark on
+         a full reload, which flattens Shiki's per-token syntax colors. -->
+    <meta name="color-scheme" content="light dark" />
+    <meta name="generator" content={Astro.generator} />
+    <Seo
+      title={title}
+      description={description}
+      keywords={keywords}
+      twitter={{ card: 'summary_large_image' }}
+      facebook={{ type: 'website' }}
+    />
+    <script is:inline>
+      (() => {
+        const read = (key, fallback) => {
+          try {
+            const raw = window.localStorage.getItem(key);
+            return raw === null ? fallback : JSON.parse(raw);
+          } catch {
+            return fallback;
+          }
+        };
+
+        const applyColorScheme = () => {
+          let dark = false;
+          try {
+            const stored = window.localStorage.getItem('colorScheme');
+            dark = stored
+              ? stored === 'dark'
+              : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          } catch {
+            dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          }
+          document.documentElement.classList.toggle('dark', dark);
+        };
+
+        const themes = ['vs-dark', 'vs', 'hc-black', 'hc-light'];
+        const applyAppearance = () => {
+          const root = document.documentElement;
+          const theme = read('selectedTheme', 'vs-dark');
+          root.dataset.codeTheme = themes.includes(theme) ? theme : 'vs-dark';
+          root.dataset.codeLang = read('editorLanguage', 'typescript');
+          root.style.setProperty('--code-font-size', `${read('fontSize', 20)}px`);
+          root.dataset.ligatures = read('fontLigatures', true) ? '1' : '0';
+          root.dataset.opentype = read('fontOpenTypeFeatures', true) ? '1' : '0';
+        };
+
+        const apply = () => {
+          applyColorScheme();
+          applyAppearance();
+        };
+
+        apply();
+        document.addEventListener('astro:after-swap', apply);
+        document.addEventListener('astro:page-load', apply);
+      })();
+    </script>
+    <ClientRouter fallback="swap" />
+  </head>
+  <body class="h-full overflow-hidden">
+    <slot />
+  </body>
+</html>

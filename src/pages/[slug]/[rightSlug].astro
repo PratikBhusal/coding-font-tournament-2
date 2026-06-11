@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AppShell from '../../layouts/AppShell.astro';
+import Header from '../../components/Header.astro';
+import Controls from '../../components/Controls.astro';
+import SearchBox from '../../components/SearchBox.astro';
+import FontTable from '../../components/FontTable.astro';
+import FontHeader from '../../components/FontHeader.astro';
+import Specimen from '../../components/Specimen.astro';
+import CodeSpecimen from '../../components/CodeSpecimen.astro';
+import codingFonts from '../../lib/codingFonts';
+import { getFontDisplayName } from '../../lib/fontFeatures';
+import { getFontPath, getFontSlug } from '../../lib/routes';
+
+export function getStaticPaths() {
+  return codingFonts.flatMap((font) =>
+    codingFonts
+      // Never pair a font with itself — that's the single-font `[slug]` page.
+      .filter((compareFont) => compareFont.family !== font.family)
+      .map((compareFont) => ({
+        params: {
+          slug: getFontSlug(font.family),
+          rightSlug: getFontSlug(compareFont.family)
+        },
+        props: { font, compareFont }
+      }))
+  );
+}
+
+const { font, compareFont } = Astro.props;
+const singleHref = getFontPath(font.family);
+const fontName = getFontDisplayName(font);
+const compareName = getFontDisplayName(compareFont);
+---
+
+<BaseLayout
+  title={`${font.family} vs ${compareFont.family}`}
+  description={`Compare ${fontName} and ${compareName} side by side with live, syntax-highlighted code specimens.`}
+>
+  <AppShell>
+    <Header slot="header" path={singleHref} />
+    <Controls slot="controls" />
+    <div slot="sidebar" class="flex flex-col gap-4">
+      <ol class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+        <li><a class="text-blue-700 underline dark:text-blue-300" href="/browse">Browse</a></li>
+        <li aria-hidden>&rsaquo;</li>
+        <li>{getFontDisplayName(font)}</li>
+      </ol>
+      <h2 class="text-2xl font-bold">{getFontDisplayName(font)}</h2>
+      <p>{font.variants.length} styles</p>
+      <Specimen font={font} />
+      {font.variants.includes('italic') && <Specimen font={font} italic />}
+      <hr class="border-slate-300 dark:border-slate-700" />
+      <SearchBox />
+      <FontTable fonts={codingFonts} baseFont={font} activeFamily={compareFont.family} />
+    </div>
+
+    <div class="grid h-full grid-cols-1 gap-4 p-4 md:grid-cols-2">
+      <div class="flex min-h-0 flex-col gap-4">
+        <FontHeader font={font} maximizeHref={singleHref} />
+        <CodeSpecimen
+          font={font}
+          class="min-h-0 overflow-hidden rounded-lg border border-slate-300 dark:border-slate-700"
+        />
+      </div>
+      <div class="flex min-h-0 flex-col gap-4">
+        <FontHeader font={compareFont} maximizeHref={singleHref} />
+        <CodeSpecimen
+          font={compareFont}
+          class="min-h-0 overflow-hidden rounded-lg border border-slate-300 dark:border-slate-700"
+        />
+      </div>
+    </div>
+  </AppShell>
+</BaseLayout>
