@@ -7,6 +7,8 @@ import {
   getFontStyle,
 } from "../lib/fontFeatures";
 import { getFontPath, getFontSlug } from "../lib/routes";
+import ButtonGroup from "./ButtonGroup.astro";
+import IconButton from "./IconButton.astro";
 
 type Props = {
   fonts: CodingFont[];
@@ -92,54 +94,56 @@ const selectAttrs = (font: CodingFont) =>
             </td>
             <td class="px-3 py-2 align-middle">
               {selectable ? (
-                <a
+                <IconButton
                   data-compare-slug={getFontSlug(font.family)}
-                  class="compare-link inline-flex min-h-8 items-center gap-2 rounded-md border border-slate-300 px-2 text-sm hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
-                >
-                  <span class="icon-[lucide--columns-2] h-4 w-4" />
-                  <span>Compare</span>
-                </a>
+                  class="compare-link min-h-8 gap-2 rounded-md border border-slate-300 px-2 text-sm dark:border-slate-700"
+                  iconClass="h-4 w-4"
+                  icon="icon-[lucide--columns-2]"
+                  label="Compare"
+                />
               ) : compareHref(font) ? (
-                <a
+                <IconButton
                   href={compareHref(font)}
-                  class="inline-flex min-h-8 items-center gap-2 rounded-md border border-slate-300 px-2 text-sm hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
-                >
-                  <span class="icon-[lucide--columns-2] h-4 w-4" />
-                  <span>Compare</span>
-                </a>
+                  class="min-h-8 gap-2 rounded-md border border-slate-300 px-2 text-sm dark:border-slate-700"
+                  iconClass="h-4 w-4"
+                  icon="icon-[lucide--columns-2]"
+                  label="Compare"
+                />
               ) : (
                 <span class="text-xs text-slate-400">—</span>
               )}
             </td>
             <td class="px-3 py-2 align-middle">
-              <div class="inline-flex overflow-hidden rounded-md border border-slate-300 dark:border-slate-700">
+              <ButtonGroup>
                 {!font.isSystemFont && (
                   <>
-                    <a
+                    <IconButton
                       href={font.siteUrl}
                       target="_blank"
-                      class="inline-flex h-8 items-center border-r border-slate-300 px-2 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+                      divider
+                      class="h-8 px-2"
+                      iconClass="h-4 w-4"
+                      icon="icon-[lucide--external-link]"
                       title="Visit site"
-                    >
-                      <span class="icon-[lucide--external-link] h-4 w-4" />
-                    </a>
-                    <a
+                    />
+                    <IconButton
                       href={font.downloadUrl}
-                      class="inline-flex h-8 items-center border-r border-slate-300 px-2 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+                      divider
+                      class="h-8 px-2"
+                      iconClass="h-4 w-4"
+                      icon="icon-[lucide--download]"
                       title="Download"
-                    >
-                      <span class="icon-[lucide--download] h-4 w-4" />
-                    </a>
+                    />
                   </>
                 )}
-                <a
+                <IconButton
                   href={getFontPath(font.family)}
-                  class="inline-flex h-8 items-center px-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  class="h-8 px-2"
+                  iconClass="h-4 w-4"
+                  icon="icon-[lucide--maximize-2]"
                   title="Open font page"
-                >
-                  <span class="icon-[lucide--maximize-2] h-4 w-4" />
-                </a>
-              </div>
+                />
+              </ButtonGroup>
             </td>
           </tr>
         ))

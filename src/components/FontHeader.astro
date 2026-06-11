@@ -2,6 +2,8 @@
 import type { CodingFont } from "../lib/codingFonts";
 import { getFontDisplayName, getFontStyle } from "../lib/fontFeatures";
 import { getFontPath } from "../lib/routes";
+import ButtonGroup from "./ButtonGroup.astro";
+import IconButton from "./IconButton.astro";
 
 type Props = {
   font: CodingFont;
@@ -32,42 +34,41 @@ const nameStyle = getFontStyle(font);
       </a>
     )
   }
-  <div
-    class="inline-flex overflow-hidden rounded-md border border-slate-300 dark:border-slate-700"
-  >
+  <ButtonGroup>
     {
       !font.isSystemFont && (
         <>
-          <a
+          <IconButton
             href={font.siteUrl}
             target="_blank"
-            class="inline-flex h-9 items-center gap-2 border-r border-slate-300 px-3 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+            divider
+            class="h-9 gap-2 px-3"
+            icon="icon-[lucide--external-link]"
+            label={`Visit ${displayName}`}
+            labelClass="hidden 2xl:block"
             title={`Visit ${displayName}`}
-          >
-            <span class="icon-[lucide--external-link] h-5 w-5" />
-            <span class="hidden 2xl:block">Visit {displayName}</span>
-          </a>
-          <a
+          />
+          <IconButton
             href={font.downloadUrl}
-            class="inline-flex h-9 items-center gap-2 border-r border-slate-300 px-3 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+            divider
+            class="h-9 gap-2 px-3"
+            icon="icon-[lucide--download]"
+            label={`Download ${displayName}`}
+            labelClass="hidden 2xl:block"
             title={`Download ${displayName}`}
-          >
-            <span class="icon-[lucide--download] h-5 w-5" />
-            <span class="hidden 2xl:block">Download {displayName}</span>
-          </a>
+          />
         </>
       )
     }
     {
       maximizeHref && (
-        <a
+        <IconButton
           href={maximizeHref}
-          class="inline-flex h-9 items-center px-3 hover:bg-slate-100 dark:hover:bg-slate-800"
+          class="h-9 px-3"
+          icon="icon-[lucide--maximize-2]"
           title="Open font page"
-        >
-          <span class="icon-[lucide--maximize-2] h-5 w-5" />
-        </a>
+        />
       )
     }
-  </div>
+  </ButtonGroup>
 </div>

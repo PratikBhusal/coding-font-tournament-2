@@ -1,0 +1,68 @@
+---
+// Polymorphic action button: an <a> (default) or <button>, with an icon and an
+// optional visible label. Use inside <ButtonGroup>; set `divider` to draw a right
+// separator. Sizing/padding come from `class` so callers keep full control.
+// Unknown props (data-*, aria-*, hidden) pass through via ...rest.
+//
+// `icon` is the full iconify utility class (e.g. "icon-[lucide--settings]"), passed
+// literally so Tailwind's scanner generates it — no dynamic class, no safelist.
+type Props = {
+  as?: "a" | "button";
+  icon: string;
+  iconClass?: string;
+  /** Visible label text rendered after the icon. */
+  label?: string;
+  /** Utility classes for the label span (e.g. "hidden 2xl:block"). */
+  labelClass?: string;
+  /** Draw a right border separating this button from the next. */
+  divider?: boolean;
+  href?: string;
+  target?: string;
+  type?: "button" | "submit" | "reset";
+  id?: string;
+  title?: string;
+  class?: string;
+  [key: string]: unknown;
+};
+
+const {
+  as = "a",
+  icon,
+  iconClass = "h-5 w-5",
+  label,
+  labelClass = "",
+  divider = false,
+  href,
+  target,
+  type,
+  id,
+  title,
+  class: className = "",
+  ...rest
+} = Astro.props;
+
+const dividerClass = divider
+  ? "border-r border-slate-300 dark:border-slate-700"
+  : "";
+
+const Tag = as;
+const attrs: Record<string, unknown> = {
+  id,
+  title,
+  class:
+    `inline-flex items-center hover:bg-slate-100 dark:hover:bg-slate-800 ${dividerClass} ${className}`.trim(),
+  ...rest,
+};
+
+if (as === "a") {
+  attrs.href = href;
+  if (target) attrs.target = target;
+} else {
+  attrs.type = type ?? "button";
+}
+---
+
+<Tag {...attrs}>
+  <span class={`${icon} ${iconClass}`}></span>
+  {label && <span class={labelClass}>{label}</span>}
+</Tag>

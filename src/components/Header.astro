@@ -1,5 +1,7 @@
 ---
 import { withBase } from "../lib/routes";
+import IconButton from "./IconButton.astro";
+import NavLink from "./NavLink.astro";
 
 type Props = {
   path?: string;
@@ -7,6 +9,14 @@ type Props = {
 };
 
 const { path = "/", canToggleSidebar = true } = Astro.props;
+
+const navItems = [
+  { label: "Tournament", to: "/" },
+  { label: "Browse", to: "/browse" },
+];
+
+const toggleClass =
+  "h-9 w-9 cursor-pointer justify-center rounded-md border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-950";
 ---
 
 <header
@@ -14,76 +24,71 @@ const { path = "/", canToggleSidebar = true } = Astro.props;
 >
   <div class="flex items-center gap-3">
     <div class="relative md:hidden">
-      <button
+      <IconButton
+        as="button"
         id="app-nav-toggle"
-        type="button"
         aria-label="Open navigation menu"
         aria-expanded="false"
         title="Menu"
-        class="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-slate-300 bg-white hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:hover:bg-slate-800"
-      >
-        <span class="icon-[lucide--menu] h-5 w-5"></span>
-      </button>
+        class={toggleClass}
+        icon="icon-[lucide--menu]"
+      />
       <nav
         id="app-nav-menu"
         hidden
         class="absolute top-full left-0 z-40 mt-2 flex min-w-40 flex-col overflow-hidden rounded-md border border-slate-300 bg-white font-mono font-semibold shadow-lg dark:border-slate-700 dark:bg-slate-950"
       >
-        <a
-          class={`px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 ${path === "/" ? "bg-slate-100 dark:bg-slate-800" : ""}`}
-          href={withBase("/")}
-        >
-          Tournament
-        </a>
-        <a
-          class={`px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 ${path === "/browse" ? "bg-slate-100 dark:bg-slate-800" : ""}`}
-          href={withBase("/browse")}
-        >
-          Browse
-        </a>
+        {
+          navItems.map((item) => (
+            <NavLink
+              href={withBase(item.to)}
+              active={path === item.to}
+              class="px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+              activeClass="bg-slate-100 dark:bg-slate-800"
+            >
+              {item.label}
+            </NavLink>
+          ))
+        }
       </nav>
     </div>
     {
       canToggleSidebar && (
-        <button
+        <IconButton
+          as="button"
           id="app-menu-toggle"
-          type="button"
           aria-label="Toggle sidebar"
           title="Toggle sidebar"
-          class="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-slate-300 bg-white hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-950 dark:hover:bg-slate-800"
-        >
-          <span class="icon-[lucide--settings] h-5 w-5" />
-        </button>
+          class={toggleClass}
+          icon="icon-[lucide--settings]"
+        />
       )
     }
   </div>
 
-  <nav
-    class="hidden items-center gap-2 font-mono text-lg font-semibold md:flex"
-  >
-    <a
-      class={`px-3 py-1 ${path === "/" ? "before:content-['<'] after:content-['>']" : ""}`}
-      href={withBase("/")}
-    >
-      Tournament
-    </a>
-    <a
-      class={`px-3 py-1 ${path === "/browse" ? "before:content-['<'] after:content-['>']" : ""}`}
-      href={withBase("/browse")}
-    >
-      Browse
-    </a>
+  <nav class="hidden items-center gap-2 font-mono text-lg font-semibold md:flex">
+    {
+      navItems.map((item) => (
+        <NavLink
+          href={withBase(item.to)}
+          active={path === item.to}
+          class="px-3 py-1"
+          activeClass="before:content-['<'] after:content-['>']"
+        >
+          {item.label}
+        </NavLink>
+      ))
+    }
   </nav>
 
-  <button
+  <IconButton
+    as="button"
     id="app-theme-toggle"
-    type="button"
     aria-label="Toggle theme"
     title="Toggle light/dark theme"
-    class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-300 bg-white text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
-  >
-    <span class="icon-[lucide--swatch-book] h-5 w-5"></span>
-  </button>
+    class="h-9 w-9 justify-center rounded-md border border-slate-300 bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+    icon="icon-[lucide--swatch-book]"
+  />
 </header>
 
 <script>

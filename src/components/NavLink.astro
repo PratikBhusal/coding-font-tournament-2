@@ -1,0 +1,17 @@
+---
+// Nav anchor with an optional active variant. Zero-JS.
+type Props = {
+  href: string;
+  active?: boolean;
+  class?: string;
+  /** Extra classes applied only when active. */
+  activeClass?: string;
+};
+
+const { href, active = false, class: className = "", activeClass = "" } =
+  Astro.props;
+---
+
+<a href={href} class={`${className} ${active ? activeClass : ""}`.trim()}>
+  <slot />
+</a>

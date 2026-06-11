@@ -2,7 +2,9 @@
 import type { CodingFont } from "../lib/codingFonts";
 import { getFontDisplayName, getFontStyle } from "../lib/fontFeatures";
 import { getFontPath } from "../lib/routes";
+import ButtonGroup from "./ButtonGroup.astro";
 import CodeSpecimen from "./CodeSpecimen.astro";
+import IconButton from "./IconButton.astro";
 
 type Props = {
   /** Prefix for the JS-addressable element ids: `${prefix}-name`, `-visit`, etc. */
@@ -16,9 +18,7 @@ type Props = {
 };
 
 const { prefix, font, id, hidden = false, showClose = false } = Astro.props;
-const actionClass =
-  "inline-flex h-9 items-center gap-2 px-3 hover:bg-slate-100 dark:hover:bg-slate-800";
-const dividerClass = "border-r border-slate-300 dark:border-slate-700";
+const actionClass = "h-9 gap-2 px-3";
 ---
 
 <div id={id} hidden={hidden} class="flex min-h-0 flex-col gap-4">
@@ -31,49 +31,46 @@ const dividerClass = "border-r border-slate-300 dark:border-slate-700";
     >
       {getFontDisplayName(font)}
     </span>
-    <div
-      class="inline-flex overflow-hidden rounded-md border border-slate-300 dark:border-slate-700"
-    >
-      <a
+    <ButtonGroup>
+      <IconButton
         id={`${prefix}-visit`}
         href={font.siteUrl}
         target="_blank"
         hidden={font.isSystemFont}
-        class={`${actionClass} ${dividerClass}`}
+        divider
+        class={actionClass}
+        icon="icon-[lucide--external-link]"
         title="Visit site"
-      >
-        <span class="icon-[lucide--external-link] h-5 w-5"></span>
-      </a>
-      <a
+      />
+      <IconButton
         id={`${prefix}-download`}
         href={font.downloadUrl}
         hidden={font.isSystemFont}
-        class={`${actionClass} ${dividerClass}`}
+        divider
+        class={actionClass}
+        icon="icon-[lucide--download]"
         title="Download"
-      >
-        <span class="icon-[lucide--download] h-5 w-5"></span>
-      </a>
-      <a
+      />
+      <IconButton
         id={`${prefix}-maximize`}
         href={getFontPath(font.family)}
-        class={`${actionClass} ${showClose ? dividerClass : ""}`}
+        divider={showClose}
+        class={actionClass}
+        icon="icon-[lucide--maximize-2]"
         title="Open font page"
-      >
-        <span class="icon-[lucide--maximize-2] h-5 w-5"></span>
-      </a>
+      />
       {
         showClose && (
-          <button
+          <IconButton
+            as="button"
             id={`${prefix}-close`}
-            type="button"
             class={`${actionClass} cursor-pointer`}
+            icon="icon-[lucide--x]"
             title="Close comparison"
-          >
-            <span class="icon-[lucide--x] h-5 w-5" />
-          </button>
+          />
         )
       }
-    </div>
+    </ButtonGroup>
   </div>
   <CodeSpecimen
     id={`${prefix}-specimen`}

@@ -1,0 +1,17 @@
+---
+// Bordered, rounded inline container that clips its action buttons' corners.
+// Pair with <IconButton divider /> to draw separators between children.
+type Props = {
+  id?: string;
+  class?: string;
+};
+
+const { id, class: className = "" } = Astro.props;
+---
+
+<div
+  id={id}
+  class={`inline-flex overflow-hidden rounded-md border border-slate-300 dark:border-slate-700 ${className}`}
+>
+  <slot />
+</div>
