@@ -1,8 +1,8 @@
 ---
-import '../styles/global.css';
-import { ClientRouter } from 'astro:transitions';
-import { Seo } from 'astro-seo-meta';
-import { withBase } from '../lib/routes';
+import "../styles/global.css";
+import { ClientRouter } from "astro:transitions";
+import { Seo } from "astro-seo-meta";
+import { withBase } from "../lib/routes";
 
 type Props = {
   title: string;
@@ -11,17 +11,26 @@ type Props = {
 };
 
 const defaultDescription =
-  'Find your favorite coding font through head-to-head matchups, then browse and compare monospace fonts with live code specimens.';
-const defaultKeywords = ['coding fonts', 'monospace fonts', 'programming fonts', 'font comparison'];
+  "Find your favorite coding font through head-to-head matchups, then browse and compare monospace fonts with live code specimens.";
+const defaultKeywords = [
+  "coding fonts",
+  "monospace fonts",
+  "programming fonts",
+  "font comparison",
+];
 
-const { title, description = defaultDescription, keywords = defaultKeywords } = Astro.props;
+const {
+  title,
+  description = defaultDescription,
+  keywords = defaultKeywords,
+} = Astro.props;
 ---
 
 <html lang="en" class="h-full overflow-hidden">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
-    <link rel="icon" href={withBase('/favicon.ico')} />
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
+    <link rel="icon" href={withBase("/favicon.ico")} />
     <meta name="viewport" content="width=device-width" />
     <!-- Warm up the font hosts and load the Google Fonts CSS from the HTML (not a CSS
          @import) so it's discovered early and doesn't extend the critical chain. -->
@@ -40,8 +49,8 @@ const { title, description = defaultDescription, keywords = defaultKeywords } = 
       title={title}
       description={description}
       keywords={keywords}
-      twitter={{ card: 'summary_large_image' }}
-      facebook={{ type: 'website' }}
+      twitter={{ card: "summary_large_image" }}
+      facebook={{ type: "website" }}
     />
     <script is:inline>
       (() => {
@@ -57,25 +66,30 @@ const { title, description = defaultDescription, keywords = defaultKeywords } = 
         const applyColorScheme = () => {
           let dark = false;
           try {
-            const stored = window.localStorage.getItem('colorScheme');
+            const stored = window.localStorage.getItem("colorScheme");
             dark = stored
-              ? stored === 'dark'
-              : window.matchMedia('(prefers-color-scheme: dark)').matches;
+              ? stored === "dark"
+              : window.matchMedia("(prefers-color-scheme: dark)").matches;
           } catch {
-            dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
           }
-          document.documentElement.classList.toggle('dark', dark);
+          document.documentElement.classList.toggle("dark", dark);
         };
 
-        const themes = ['vs-dark', 'vs', 'hc-black', 'hc-light'];
+        const themes = ["vs-dark", "vs", "hc-black", "hc-light"];
         const applyAppearance = () => {
           const root = document.documentElement;
-          const theme = read('selectedTheme', 'vs-dark');
-          root.dataset.codeTheme = themes.includes(theme) ? theme : 'vs-dark';
-          root.dataset.codeLang = read('editorLanguage', 'typescript');
-          root.style.setProperty('--code-font-size', `${read('fontSize', 20)}px`);
-          root.dataset.ligatures = read('fontLigatures', true) ? '1' : '0';
-          root.dataset.opentype = read('fontOpenTypeFeatures', true) ? '1' : '0';
+          const theme = read("selectedTheme", "vs-dark");
+          root.dataset.codeTheme = themes.includes(theme) ? theme : "vs-dark";
+          root.dataset.codeLang = read("editorLanguage", "typescript");
+          root.style.setProperty(
+            "--code-font-size",
+            `${read("fontSize", 20)}px`,
+          );
+          root.dataset.ligatures = read("fontLigatures", true) ? "1" : "0";
+          root.dataset.opentype = read("fontOpenTypeFeatures", true)
+            ? "1"
+            : "0";
         };
 
         const apply = () => {
@@ -84,8 +98,8 @@ const { title, description = defaultDescription, keywords = defaultKeywords } = 
         };
 
         apply();
-        document.addEventListener('astro:after-swap', apply);
-        document.addEventListener('astro:page-load', apply);
+        document.addEventListener("astro:after-swap", apply);
+        document.addEventListener("astro:page-load", apply);
       })();
     </script>
     <ClientRouter fallback="swap" />

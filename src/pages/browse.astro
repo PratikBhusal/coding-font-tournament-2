@@ -1,14 +1,15 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import AppShell from '../layouts/AppShell.astro';
-import Header from '../components/Header.astro';
-import Controls from '../components/Controls.astro';
-import SearchBox from '../components/SearchBox.astro';
-import FontTable from '../components/FontTable.astro';
-import BrowseView from '../components/BrowseView.astro';
-import codingFonts from '../lib/codingFonts';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AppShell from "../layouts/AppShell.astro";
+import Header from "../components/Header.astro";
+import Controls from "../components/Controls.astro";
+import SearchBox from "../components/SearchBox.astro";
+import FontTable from "../components/FontTable.astro";
+import BrowseView from "../components/BrowseView.astro";
+import codingFonts from "../lib/codingFonts";
 
-const featuredFont = codingFonts.find((font) => font.family === 'ui-monospace') ?? codingFonts[0];
+const featuredFont =
+  codingFonts.find((font) => font.family === "ui-monospace") ?? codingFonts[0];
 ---
 
 <BaseLayout
@@ -20,17 +21,28 @@ const featuredFont = codingFonts.find((font) => font.family === 'ui-monospace') 
     <Controls slot="controls" />
     <div slot="sidebar" class="flex flex-col gap-4">
       <SearchBox />
-      <FontTable fonts={codingFonts} showNames selectable activeFamily={featuredFont.family} />
+      <FontTable
+        fonts={codingFonts}
+        showNames
+        selectable
+        activeFamily={featuredFont.family}
+      />
     </div>
 
     <div id="browse-board" class="grid h-full grid-cols-1 gap-4 p-4">
       <BrowseView prefix="browse" font={featuredFont} />
-      <BrowseView prefix="browse-compare" id="browse-compare" font={featuredFont} showClose hidden />
+      <BrowseView
+        prefix="browse-compare"
+        id="browse-compare"
+        font={featuredFont}
+        showClose
+        hidden
+      />
     </div>
   </AppShell>
 
   <script>
-    import { initBrowseFont } from '../scripts/browseFont';
-    document.addEventListener('astro:page-load', initBrowseFont);
+    import { initBrowseFont } from "../scripts/browseFont";
+    document.addEventListener("astro:page-load", initBrowseFont);
   </script>
 </BaseLayout>

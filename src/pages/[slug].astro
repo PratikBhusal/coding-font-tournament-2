@@ -1,21 +1,21 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import AppShell from '../layouts/AppShell.astro';
-import Header from '../components/Header.astro';
-import Controls from '../components/Controls.astro';
-import SearchBox from '../components/SearchBox.astro';
-import FontTable from '../components/FontTable.astro';
-import FontHeader from '../components/FontHeader.astro';
-import Specimen from '../components/Specimen.astro';
-import CodeSpecimen from '../components/CodeSpecimen.astro';
-import codingFonts from '../lib/codingFonts';
-import { getFontDisplayName } from '../lib/fontFeatures';
-import { getFontSlug, withBase } from '../lib/routes';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AppShell from "../layouts/AppShell.astro";
+import Header from "../components/Header.astro";
+import Controls from "../components/Controls.astro";
+import SearchBox from "../components/SearchBox.astro";
+import FontTable from "../components/FontTable.astro";
+import FontHeader from "../components/FontHeader.astro";
+import Specimen from "../components/Specimen.astro";
+import CodeSpecimen from "../components/CodeSpecimen.astro";
+import codingFonts from "../lib/codingFonts";
+import { getFontDisplayName } from "../lib/fontFeatures";
+import { getFontSlug, withBase } from "../lib/routes";
 
 export function getStaticPaths() {
   return codingFonts.map((font) => ({
     params: { slug: getFontSlug(font.family) },
-    props: { font }
+    props: { font },
   }));
 }
 
@@ -24,15 +24,21 @@ const fontName = getFontDisplayName(font);
 ---
 
 <BaseLayout
-  title={font.displayName ?? font.family ?? 'Coding Font'}
+  title={font.displayName ?? font.family ?? "Coding Font"}
   description={`Preview ${fontName} with live, syntax-highlighted code specimens, then compare it against other coding fonts.`}
 >
   <AppShell>
     <Header slot="header" path={`/${getFontSlug(font.family)}`} />
     <Controls slot="controls" />
     <div slot="sidebar" class="flex flex-col gap-4">
-      <ol class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-        <li><a class="text-blue-700 underline dark:text-blue-300" href={withBase('/browse')}>Browse</a></li>
+      <ol
+        class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400"
+      >
+        <li>
+          <a
+            class="text-blue-700 underline dark:text-blue-300"
+            href={withBase("/browse")}>Browse</a>
+        </li>
         <li aria-hidden>&rsaquo;</li>
         <li>{getFontDisplayName(font)}</li>
       </ol>
@@ -54,7 +60,7 @@ const fontName = getFontDisplayName(font);
         )
       }
       <Specimen font={font} />
-      {font.variants.includes('italic') && <Specimen font={font} italic />}
+      {font.variants.includes("italic") && <Specimen font={font} italic />}
       {
         !font.isSystemFont && (
           <div class="overflow-hidden rounded-lg border border-slate-300 dark:border-slate-700">
@@ -92,7 +98,11 @@ const fontName = getFontDisplayName(font);
       }
       <hr class="border-slate-300 dark:border-slate-700" />
       <SearchBox />
-      <FontTable fonts={codingFonts} baseFont={font} activeFamily={font.family} />
+      <FontTable
+        fonts={codingFonts}
+        baseFont={font}
+        activeFamily={font.family}
+      />
     </div>
 
     <div class="grid h-full grid-cols-1 gap-4 p-4 md:grid-cols-2">

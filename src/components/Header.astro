@@ -1,12 +1,12 @@
 ---
-import { withBase } from '../lib/routes';
+import { withBase } from "../lib/routes";
 
 type Props = {
   path?: string;
   canToggleSidebar?: boolean;
 };
 
-const { path = '/', canToggleSidebar = true } = Astro.props;
+const { path = "/", canToggleSidebar = true } = Astro.props;
 ---
 
 <header
@@ -27,17 +27,17 @@ const { path = '/', canToggleSidebar = true } = Astro.props;
       <nav
         id="app-nav-menu"
         hidden
-        class="absolute left-0 top-full z-40 mt-2 flex min-w-40 flex-col overflow-hidden rounded-md border border-slate-300 bg-white font-mono font-semibold shadow-lg dark:border-slate-700 dark:bg-slate-950"
+        class="absolute top-full left-0 z-40 mt-2 flex min-w-40 flex-col overflow-hidden rounded-md border border-slate-300 bg-white font-mono font-semibold shadow-lg dark:border-slate-700 dark:bg-slate-950"
       >
         <a
-          class={`px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 ${path === '/' ? 'bg-slate-100 dark:bg-slate-800' : ''}`}
-          href={withBase('/')}
+          class={`px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 ${path === "/" ? "bg-slate-100 dark:bg-slate-800" : ""}`}
+          href={withBase("/")}
         >
           Tournament
         </a>
         <a
-          class={`px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 ${path === '/browse' ? 'bg-slate-100 dark:bg-slate-800' : ''}`}
-          href={withBase('/browse')}
+          class={`px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 ${path === "/browse" ? "bg-slate-100 dark:bg-slate-800" : ""}`}
+          href={withBase("/browse")}
         >
           Browse
         </a>
@@ -58,13 +58,18 @@ const { path = '/', canToggleSidebar = true } = Astro.props;
     }
   </div>
 
-  <nav class="hidden items-center gap-2 font-mono text-lg font-semibold md:flex">
-    <a class={`px-3 py-1 ${path === '/' ? "before:content-['<'] after:content-['>']" : ''}`} href={withBase('/')}>
+  <nav
+    class="hidden items-center gap-2 font-mono text-lg font-semibold md:flex"
+  >
+    <a
+      class={`px-3 py-1 ${path === "/" ? "before:content-['<'] after:content-['>']" : ""}`}
+      href={withBase("/")}
+    >
       Tournament
     </a>
     <a
-      class={`px-3 py-1 ${path === '/browse' ? "before:content-['<'] after:content-['>']" : ''}`}
-      href={withBase('/browse')}
+      class={`px-3 py-1 ${path === "/browse" ? "before:content-['<'] after:content-['>']" : ""}`}
+      href={withBase("/browse")}
     >
       Browse
     </a>
@@ -82,7 +87,7 @@ const { path = '/', canToggleSidebar = true } = Astro.props;
 </header>
 
 <script>
-  import { initHeader } from '../scripts/header';
+  import { initHeader } from "../scripts/header";
   initHeader();
-  document.addEventListener('astro:page-load', initHeader);
+  document.addEventListener("astro:page-load", initHeader);
 </script>

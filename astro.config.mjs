@@ -1,16 +1,16 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
 
-import solidJs from '@astrojs/solid-js';
+import solidJs from "@astrojs/solid-js";
 
-import tailwindcss from '@tailwindcss/vite';
+import tailwindcss from "@tailwindcss/vite";
 
-import sitemap from '@astrojs/sitemap';
+import sitemap from "@astrojs/sitemap";
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://pratikbhusal.github.io',
-  base: '/coding-font-tournament',
+  site: "https://pratikbhusal.github.io",
+  base: "/coding-font-tournament",
 
   integrations: [solidJs(), sitemap()],
 
@@ -23,16 +23,16 @@ export default defineConfig({
     // Dep") and breaks the view transition.
     optimizeDeps: {
       include: [
-        'solid-js',
-        'solid-js/web',
-        'solid-js/store',
-        'solid-js/h',
-        'solid-js/html',
-        '@astrojs/solid-js/client.js',
-        'canvas-confetti',
-        'aria-query',
-        'axobject-query'
-      ]
-    }
-  }
+        "solid-js",
+        "solid-js/web",
+        "solid-js/store",
+        "solid-js/h",
+        "solid-js/html",
+        "@astrojs/solid-js/client.js",
+        "canvas-confetti",
+        "aria-query",
+        "axobject-query",
+      ],
+    },
+  },
 });

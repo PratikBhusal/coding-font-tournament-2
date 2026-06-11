@@ -1,7 +1,12 @@
 ---
-import type { CodingFont } from '../lib/codingFonts';
-import { getCssFontFamily, getFontDisplayName, getFontFeatures, getFontStyle } from '../lib/fontFeatures';
-import { getFontPath, getFontSlug } from '../lib/routes';
+import type { CodingFont } from "../lib/codingFonts";
+import {
+  getCssFontFamily,
+  getFontDisplayName,
+  getFontFeatures,
+  getFontStyle,
+} from "../lib/fontFeatures";
+import { getFontPath, getFontSlug } from "../lib/routes";
 
 type Props = {
   fonts: CodingFont[];
@@ -12,7 +17,13 @@ type Props = {
   selectable?: boolean;
 };
 
-const { fonts, baseFont, activeFamily, showNames = true, selectable = false } = Astro.props;
+const {
+  fonts,
+  baseFont,
+  activeFamily,
+  showNames = true,
+  selectable = false,
+} = Astro.props;
 
 const compareHref = (font: CodingFont) =>
   baseFont && baseFont.family !== font.family
@@ -23,17 +34,17 @@ const compareHref = (font: CodingFont) =>
 const selectAttrs = (font: CodingFont) =>
   selectable
     ? {
-        'data-family': font.family,
-        'data-css-family': getCssFontFamily(font),
-        'data-feat-both': getFontFeatures(font, true, true) || 'normal',
-        'data-feat-lig': getFontFeatures(font, false, true) || 'normal',
-        'data-feat-ot': getFontFeatures(font, true, false) || 'normal',
-        'data-display-name': getFontDisplayName(font),
-        'data-slug': getFontSlug(font.family),
-        'data-path': getFontPath(font.family),
-        'data-site-url': font.siteUrl,
-        'data-download-url': font.downloadUrl,
-        'data-system': font.isSystemFont ? '1' : '0'
+        "data-family": font.family,
+        "data-css-family": getCssFontFamily(font),
+        "data-feat-both": getFontFeatures(font, true, true) || "normal",
+        "data-feat-lig": getFontFeatures(font, false, true) || "normal",
+        "data-feat-ot": getFontFeatures(font, true, false) || "normal",
+        "data-display-name": getFontDisplayName(font),
+        "data-slug": getFontSlug(font.family),
+        "data-path": getFontPath(font.family),
+        "data-site-url": font.siteUrl,
+        "data-download-url": font.downloadUrl,
+        "data-system": font.isSystemFont ? "1" : "0",
       }
     : {};
 ---
@@ -42,10 +53,10 @@ const selectAttrs = (font: CodingFont) =>
   id="font-table"
   class="overflow-auto rounded-lg border border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-950"
 >
-  <table class="w-full border-collapse whitespace-nowrap text-left">
+  <table class="w-full border-collapse text-left whitespace-nowrap">
     <thead>
       <tr
-        class="border-b border-slate-300 text-xs uppercase text-slate-500 dark:border-slate-700 dark:text-slate-400"
+        class="border-b border-slate-300 text-xs text-slate-500 uppercase dark:border-slate-700 dark:text-slate-400"
       >
         <th class="px-3 py-2">Font Family</th>
         <th class="px-3 py-2">Preview</th>
@@ -59,15 +70,23 @@ const selectAttrs = (font: CodingFont) =>
             data-search={`${font.family} ${getFontDisplayName(font)}`.toLowerCase()}
             {...selectAttrs(font)}
             class={`border-b border-slate-200 hover:bg-blue-50 dark:border-slate-800 dark:hover:bg-blue-950 ${
-              selectable ? 'cursor-pointer' : ''
-            } ${activeFamily === font.family ? 'bg-blue-100 dark:bg-blue-900/40' : ''}`}
+              selectable ? "cursor-pointer" : ""
+            } ${activeFamily === font.family ? "bg-blue-100 dark:bg-blue-900/40" : ""}`}
           >
-            <td class="max-w-36 truncate px-3 py-2 align-middle" style={getFontStyle(font)}>
+            <td
+              class="max-w-36 truncate px-3 py-2 align-middle"
+              style={getFontStyle(font)}
+            >
               {selectable ? (
-                <span class="block truncate">{showNames ? getFontDisplayName(font) : 'ABC abc 123'}</span>
+                <span class="block truncate">
+                  {showNames ? getFontDisplayName(font) : "ABC abc 123"}
+                </span>
               ) : (
-                <a class="block truncate hover:underline" href={getFontPath(font.family)}>
-                  {showNames ? getFontDisplayName(font) : 'ABC abc 123'}
+                <a
+                  class="block truncate hover:underline"
+                  href={getFontPath(font.family)}
+                >
+                  {showNames ? getFontDisplayName(font) : "ABC abc 123"}
                 </a>
               )}
             </td>

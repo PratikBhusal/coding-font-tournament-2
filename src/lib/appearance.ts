@@ -1,6 +1,6 @@
-import { DEFAULT_CODE_THEME, codeThemeSlugs } from './codeThemes';
-import { DEFAULT_LANGUAGE } from './sampleCode';
-import { readJSON, writeJSON } from './storage';
+import { DEFAULT_CODE_THEME, codeThemeSlugs } from "./codeThemes";
+import { DEFAULT_LANGUAGE } from "./sampleCode";
+import { readJSON, writeJSON } from "./storage";
 
 /**
  * Appearance is applied one-way to `<html>` (CSS variables + `data-*`), read by the
@@ -10,11 +10,11 @@ import { readJSON, writeJSON } from './storage';
  * localStorage keys/format are preserved from the previous Solid store for back-compat.
  */
 export const APPEARANCE_KEYS = {
-  theme: 'selectedTheme',
-  language: 'editorLanguage',
-  fontSize: 'fontSize',
-  ligatures: 'fontLigatures',
-  openType: 'fontOpenTypeFeatures'
+  theme: "selectedTheme",
+  language: "editorLanguage",
+  fontSize: "fontSize",
+  ligatures: "fontLigatures",
+  openType: "fontOpenTypeFeatures",
 } as const;
 
 export const APPEARANCE_DEFAULTS = {
@@ -22,7 +22,7 @@ export const APPEARANCE_DEFAULTS = {
   language: DEFAULT_LANGUAGE,
   fontSize: 20,
   ligatures: true,
-  openType: true
+  openType: true,
 };
 
 export function getTheme(): string {
@@ -50,9 +50,9 @@ export function applyAppearance() {
   const root = document.documentElement;
   root.dataset.codeTheme = getTheme();
   root.dataset.codeLang = getLanguage();
-  root.style.setProperty('--code-font-size', `${getFontSize()}px`);
-  root.dataset.ligatures = getLigatures() ? '1' : '0';
-  root.dataset.opentype = getOpenType() ? '1' : '0';
+  root.style.setProperty("--code-font-size", `${getFontSize()}px`);
+  root.dataset.ligatures = getLigatures() ? "1" : "0";
+  root.dataset.opentype = getOpenType() ? "1" : "0";
 }
 
 export function setTheme(value: string) {

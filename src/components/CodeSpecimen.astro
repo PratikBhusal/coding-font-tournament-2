@@ -1,8 +1,8 @@
 ---
-import type { CodingFont } from '../lib/codingFonts';
-import { getCssFontFamily, getFontFeatures } from '../lib/fontFeatures';
-import { highlightAllSamples } from '../lib/highlight';
-import { sampleLanguages } from '../lib/sampleCode';
+import type { CodingFont } from "../lib/codingFonts";
+import { getCssFontFamily, getFontFeatures } from "../lib/fontFeatures";
+import { highlightAllSamples } from "../lib/highlight";
+import { sampleLanguages } from "../lib/sampleCode";
 
 type Props = {
   font: CodingFont;
@@ -10,22 +10,22 @@ type Props = {
   id?: string;
 };
 
-const { font, class: className = '', id } = Astro.props;
+const { font, class: className = "", id } = Astro.props;
 
 // Build-time highlighted HTML (cached); same markup reused by every specimen.
 const highlighted = await highlightAllSamples();
 
 // Bake per-font feature-setting variants; root data-* selects between them via CSS.
-const featBoth = getFontFeatures(font, true, true) || 'normal';
-const featLig = getFontFeatures(font, false, true) || 'normal';
-const featOt = getFontFeatures(font, true, false) || 'normal';
+const featBoth = getFontFeatures(font, true, true) || "normal";
+const featLig = getFontFeatures(font, false, true) || "normal";
+const featOt = getFontFeatures(font, true, false) || "normal";
 
 const style = [
   `font-family: ${getCssFontFamily(font)}`,
   `--feat-both: ${featBoth}`,
   `--feat-lig: ${featLig}`,
-  `--feat-ot: ${featOt}`
-].join('; ');
+  `--feat-ot: ${featOt}`,
+].join("; ");
 ---
 
 <div
@@ -35,7 +35,11 @@ const style = [
 >
   {
     sampleLanguages.map((language) => (
-      <div class="code-lang" data-lang={language.id} set:html={highlighted[language.id]} />
+      <div
+        class="code-lang"
+        data-lang={language.id}
+        set:html={highlighted[language.id]}
+      />
     ))
   }
 </div>

@@ -10,6 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "test": "playwright test",
+    "format": "prettier --write .",
     "astro": "astro"
   },
   "dependencies": {
@@ -31,6 +32,9 @@
     "@types/node": "^25.9.2",
     "astro": "^6.4.6",
     "astro-seo-meta": "^6.0.0",
+    "prettier": "^3.8.4",
+    "prettier-plugin-astro": "^0.14.1",
+    "prettier-plugin-tailwindcss": "^0.8.0",
     "shiki": "^4.2.0",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3"

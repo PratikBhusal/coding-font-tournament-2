@@ -1,7 +1,7 @@
 ---
-import type { CodingFont } from '../lib/codingFonts';
-import { getFontDisplayName, getFontStyle } from '../lib/fontFeatures';
-import { getFontPath } from '../lib/routes';
+import type { CodingFont } from "../lib/codingFonts";
+import { getFontDisplayName, getFontStyle } from "../lib/fontFeatures";
+import { getFontPath } from "../lib/routes";
 
 type Props = {
   font: CodingFont;
@@ -16,14 +16,25 @@ const nameStyle = getFontStyle(font);
 <div class="flex min-h-9 items-center justify-between gap-3">
   {
     font.isSystemFont ? (
-      <span class="truncate whitespace-nowrap text-lg font-bold" style={nameStyle}>{displayName}</span>
+      <span
+        class="truncate text-lg font-bold whitespace-nowrap"
+        style={nameStyle}
+      >
+        {displayName}
+      </span>
     ) : (
-      <a class="truncate whitespace-nowrap text-lg font-bold hover:underline" style={nameStyle} href={getFontPath(font.family)}>
+      <a
+        class="truncate text-lg font-bold whitespace-nowrap hover:underline"
+        style={nameStyle}
+        href={getFontPath(font.family)}
+      >
         {displayName}
       </a>
     )
   }
-  <div class="inline-flex overflow-hidden rounded-md border border-slate-300 dark:border-slate-700">
+  <div
+    class="inline-flex overflow-hidden rounded-md border border-slate-300 dark:border-slate-700"
+  >
     {
       !font.isSystemFont && (
         <>

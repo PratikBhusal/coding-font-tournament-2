@@ -18,9 +18,9 @@ const { sidebarDefaultOpen = false, sidebarTestId } = Astro.props;
     <aside
       id="app-sidebar"
       data-testid={sidebarTestId}
-      data-default-open={sidebarDefaultOpen ? '1' : '0'}
+      data-default-open={sidebarDefaultOpen ? "1" : "0"}
       class="relative z-20 min-w-0 overflow-hidden"
-      style={`width: ${sidebarDefaultOpen ? 'clamp(12rem, 33vw, 100vw)' : '0px'}`}
+      style={`width: ${sidebarDefaultOpen ? "clamp(12rem, 33vw, 100vw)" : "0px"}`}
     >
       <div
         class="absolute inset-0 flex flex-col gap-4 overflow-auto border-r border-slate-300 bg-slate-100 p-4 pr-5 dark:border-slate-700 dark:bg-slate-900"
@@ -31,10 +31,10 @@ const { sidebarDefaultOpen = false, sidebarTestId } = Astro.props;
           type="button"
           aria-label="Resize sidebar"
           title="Drag to resize. Double-click to reset width."
-          class="group absolute right-0 top-0 hidden h-full w-3 cursor-col-resize touch-none lg:block"
+          class="group absolute top-0 right-0 hidden h-full w-3 cursor-col-resize touch-none lg:block"
         >
           <span
-            class="absolute right-0 top-0 h-full w-1 bg-slate-300 group-hover:bg-blue-500 group-active:bg-blue-600 dark:bg-slate-600"
+            class="absolute top-0 right-0 h-full w-1 bg-slate-300 group-hover:bg-blue-500 group-active:bg-blue-600 dark:bg-slate-600"
           ></span>
         </button>
       </div>
@@ -44,7 +44,7 @@ const { sidebarDefaultOpen = false, sidebarTestId } = Astro.props;
 </div>
 
 <script>
-  import { initSidebar } from '../scripts/appShellSidebar';
+  import { initSidebar } from "../scripts/appShellSidebar";
   initSidebar();
-  document.addEventListener('astro:page-load', initSidebar);
+  document.addEventListener("astro:page-load", initSidebar);
 </script>

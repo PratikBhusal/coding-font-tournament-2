@@ -1,52 +1,52 @@
-import type { CodingFont } from './codingFonts';
+import type { CodingFont } from "./codingFonts";
 
 type FontFeatureConfig = Pick<
   CodingFont,
-  'family' | 'openTypeFeatures' | 'ligatureFeatures'
+  "family" | "openTypeFeatures" | "ligatureFeatures"
 >;
 
 export function getFontFeatures(
-  font?: Pick<FontFeatureConfig, 'openTypeFeatures' | 'ligatureFeatures'>,
+  font?: Pick<FontFeatureConfig, "openTypeFeatures" | "ligatureFeatures">,
   enableOpenTypeFeatures = true,
-  enableLigatureFeatures = true
+  enableLigatureFeatures = true,
 ) {
   const features = [
     ...(enableOpenTypeFeatures ? (font?.openTypeFeatures ?? []) : []),
-    ...(enableLigatureFeatures ? (font?.ligatureFeatures ?? []) : [])
+    ...(enableLigatureFeatures ? (font?.ligatureFeatures ?? []) : []),
   ].filter((feature, index, enabledFeatures) => {
     return enabledFeatures.indexOf(feature) === index;
   });
 
   return features
     .map((feature) => {
-      const [featureName, featureValue] = feature.split('=');
+      const [featureName, featureValue] = feature.split("=");
       return featureValue
         ? `"${featureName}" ${featureValue}`
         : `"${featureName}"`;
     })
-    .join(', ');
+    .join(", ");
 }
 
 export function getFontDisplayName(
-  font?: Pick<CodingFont, 'family' | 'displayName'>
+  font?: Pick<CodingFont, "family" | "displayName">,
 ) {
-  return font?.displayName ?? font?.family ?? '';
+  return font?.displayName ?? font?.family ?? "";
 }
 
 export function getCssMonospaceFallback() {
-  return 'ui-monospace, monospace';
+  return "ui-monospace, monospace";
 }
 
-export function getCssFontFamily(font?: Pick<CodingFont, 'family'>) {
+export function getCssFontFamily(font?: Pick<CodingFont, "family">) {
   if (!font?.family) {
-    return '';
+    return "";
   }
 
-  if (font.family === 'ui-monospace') {
+  if (font.family === "ui-monospace") {
     return getCssMonospaceFallback();
   }
 
-  const family = font.family.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  const family = font.family.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 
   return `'${family}', ${getCssMonospaceFallback()}`;
 }
@@ -54,17 +54,17 @@ export function getCssFontFamily(font?: Pick<CodingFont, 'family'>) {
 export function getFontStyle(
   font?: FontFeatureConfig,
   enableOpenTypeFeatures = true,
-  enableLigatureFeatures = true
+  enableLigatureFeatures = true,
 ) {
   const fontFeatures = getFontFeatures(
     font,
     enableOpenTypeFeatures,
-    enableLigatureFeatures
+    enableLigatureFeatures,
   );
   return [
-    font?.family ? `font-family: ${getCssFontFamily(font)}` : '',
-    fontFeatures ? `font-feature-settings: ${fontFeatures}` : ''
+    font?.family ? `font-family: ${getCssFontFamily(font)}` : "",
+    fontFeatures ? `font-feature-settings: ${fontFeatures}` : "",
   ]
     .filter(Boolean)
-    .join('; ');
+    .join("; ");
 }

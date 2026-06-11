@@ -1,25 +1,26 @@
-import { type Accessor, createSignal, For, Show } from 'solid-js';
-import { useStore } from '@nanostores/solid';
-import type { CodingFont } from '../lib/codingFonts';
-import { getFontDisplayName, getFontStyle } from '../lib/fontFeatures';
-import { TournamentEliminationMode } from '../lib/game';
+import { type Accessor, createSignal, For, Show } from "solid-js";
+import { useStore } from "@nanostores/solid";
+import type { CodingFont } from "../lib/codingFonts";
+import { getFontDisplayName, getFontStyle } from "../lib/fontFeatures";
+import { TournamentEliminationMode } from "../lib/game";
 import {
   $canStartTournament,
   $eliminationMode,
   $selectedFonts,
   $tournamentFamilies,
-  TOURNAMENT_START_EVENT
-} from '../lib/tournamentStore';
+  TOURNAMENT_START_EVENT,
+} from "../lib/tournamentStore";
 
 type TournamentSidebarProps = {
   fonts: CodingFont[];
 };
 
 const fieldClass =
-  'min-h-9 rounded-md border border-slate-300 bg-white px-3 dark:border-slate-700 dark:bg-slate-950';
+  "min-h-9 rounded-md border border-slate-300 bg-white px-3 dark:border-slate-700 dark:bg-slate-950";
 const buttonClass =
-  'min-h-9 flex-1 cursor-pointer rounded-md border border-slate-300 px-3 py-2 hover:bg-slate-200 dark:border-slate-700 dark:hover:bg-slate-800';
-const labelClass = 'text-sm font-bold uppercase tracking-wide text-slate-600 dark:text-slate-400';
+  "min-h-9 flex-1 cursor-pointer rounded-md border border-slate-300 px-3 py-2 hover:bg-slate-200 dark:border-slate-700 dark:hover:bg-slate-800";
+const labelClass =
+  "text-sm font-bold uppercase tracking-wide text-slate-600 dark:text-slate-400";
 
 function PoolHeader(props: { fonts: CodingFont[] }) {
   const selectedFonts = useStore($selectedFonts);
@@ -33,7 +34,10 @@ function PoolHeader(props: { fonts: CodingFont[] }) {
   );
 }
 
-function FontSearch(props: { query: Accessor<string>; setQuery: (value: string) => void }) {
+function FontSearch(props: {
+  query: Accessor<string>;
+  setQuery: (value: string) => void;
+}) {
   return (
     <input
       class={fieldClass}
@@ -46,16 +50,30 @@ function FontSearch(props: { query: Accessor<string>; setQuery: (value: string) 
 }
 
 function PoolPresets(props: { fonts: CodingFont[] }) {
-  const curated = () => props.fonts.filter((font) => font.includeInInitialTournament).map((font) => font.family);
+  const curated = () =>
+    props.fonts
+      .filter((font) => font.includeInInitialTournament)
+      .map((font) => font.family);
   return (
     <div class="@container flex flex-wrap gap-2">
-      <button class={`${buttonClass} @max-xs:basis-[calc(50%-0.25rem)]`} onClick={() => $tournamentFamilies.set(props.fonts.map((font) => font.family))}>
+      <button
+        class={`${buttonClass} @max-xs:basis-[calc(50%-0.25rem)]`}
+        onClick={() =>
+          $tournamentFamilies.set(props.fonts.map((font) => font.family))
+        }
+      >
         All
       </button>
-      <button class={`${buttonClass} @max-xs:basis-[calc(50%-0.25rem)]`} onClick={() => $tournamentFamilies.set(curated())}>
+      <button
+        class={`${buttonClass} @max-xs:basis-[calc(50%-0.25rem)]`}
+        onClick={() => $tournamentFamilies.set(curated())}
+      >
         Curated
       </button>
-      <button class={`${buttonClass} @max-xs:basis-full`} onClick={() => $tournamentFamilies.set([])}>
+      <button
+        class={`${buttonClass} @max-xs:basis-full`}
+        onClick={() => $tournamentFamilies.set([])}
+      >
         Clear
       </button>
     </div>
@@ -63,8 +81,8 @@ function PoolPresets(props: { fonts: CodingFont[] }) {
 }
 
 function ImportList(props: { fonts: CodingFont[] }) {
-  const [importText, setImportText] = createSignal('');
-  const [importMessage, setImportMessage] = createSignal('');
+  const [importText, setImportText] = createSignal("");
+  const [importMessage, setImportMessage] = createSignal("");
 
   function importFonts() {
     const byName = new Map<string, string>();
@@ -87,7 +105,9 @@ function ImportList(props: { fonts: CodingFont[] }) {
     });
 
     $tournamentFamilies.set(Array.from(new Set(matched)));
-    setImportMessage(`${matched.length} matched${missing.length ? `, ${missing.length} not found` : ''}.`);
+    setImportMessage(
+      `${matched.length} matched${missing.length ? `, ${missing.length} not found` : ""}.`,
+    );
   }
 
   return (
@@ -106,7 +126,9 @@ function ImportList(props: { fonts: CodingFont[] }) {
         Import list
       </button>
       <Show when={importMessage()}>
-        <span class="text-sm text-slate-600 dark:text-slate-400">{importMessage()}</span>
+        <span class="text-sm text-slate-600 dark:text-slate-400">
+          {importMessage()}
+        </span>
       </Show>
     </>
   );
@@ -120,7 +142,11 @@ function EliminationSelect() {
       <select
         class="min-h-9 rounded-md border border-slate-300 bg-white px-2 dark:border-slate-700 dark:bg-slate-950"
         value={eliminationMode()}
-        onInput={(event) => $eliminationMode.set(event.currentTarget.value as TournamentEliminationMode)}
+        onInput={(event) =>
+          $eliminationMode.set(
+            event.currentTarget.value as TournamentEliminationMode,
+          )
+        }
       >
         <option value={TournamentEliminationMode.Single}>Single</option>
         <option value={TournamentEliminationMode.Double}>Double</option>
@@ -152,13 +178,19 @@ function FontList(props: { fonts: CodingFont[]; query: Accessor<string> }) {
   const filtered = () => {
     const query = props.query().trim().toLowerCase();
     return props.fonts.filter((font) =>
-      [font.family, getFontDisplayName(font)].some((name) => name.toLowerCase().includes(query))
+      [font.family, getFontDisplayName(font)].some((name) =>
+        name.toLowerCase().includes(query),
+      ),
     );
   };
 
   function toggle(family: string) {
     const list = $tournamentFamilies.get() ?? [];
-    $tournamentFamilies.set(list.includes(family) ? list.filter((value) => value !== family) : [...list, family]);
+    $tournamentFamilies.set(
+      list.includes(family)
+        ? list.filter((value) => value !== family)
+        : [...list, family],
+    );
   }
 
   return (
@@ -182,7 +214,7 @@ function FontList(props: { fonts: CodingFont[]; query: Accessor<string> }) {
 
 export default function TournamentSidebar(props: TournamentSidebarProps) {
   // Lifted because the search box and the font list both read it.
-  const [query, setQuery] = createSignal('');
+  const [query, setQuery] = createSignal("");
 
   return (
     <div class="flex flex-col gap-2">

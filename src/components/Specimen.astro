@@ -1,6 +1,6 @@
 ---
-import type { CodingFont } from '../lib/codingFonts';
-import { getFontStyle } from '../lib/fontFeatures';
+import type { CodingFont } from "../lib/codingFonts";
+import { getFontStyle } from "../lib/fontFeatures";
 
 type Props = {
   font: CodingFont;
@@ -10,20 +10,22 @@ type Props = {
 const { font, italic = false } = Astro.props;
 
 const specimen = [
-  '0oO | Ll1Iti ,.:; () [] {} <> * ??. !!',
-  '"" \'\' != == === if 0123456789 %@ && ||',
-  '// /* */ << >> <= >= => -> . ++ -- ^+-',
-  'Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm',
-  'Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz'
+  "0oO | Ll1Iti ,.:; () [] {} <> * ??. !!",
+  "\"\" '' != == === if 0123456789 %@ && ||",
+  "// /* */ << >> <= >= => -> . ++ -- ^+-",
+  "Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm",
+  "Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz",
 ];
 ---
 
 <div
-  style={`${getFontStyle(font)}; ${italic ? 'font-style: italic;' : ''}`}
-  class="relative flex min-h-40 flex-col items-center justify-center overflow-hidden whitespace-nowrap rounded-lg border border-slate-300 bg-white p-4 dark:border-slate-700 dark:bg-slate-950"
+  style={`${getFontStyle(font)}; ${italic ? "font-style: italic;" : ""}`}
+  class="relative flex min-h-40 flex-col items-center justify-center overflow-hidden rounded-lg border border-slate-300 bg-white p-4 whitespace-nowrap dark:border-slate-700 dark:bg-slate-950"
 >
-  <div class="absolute bottom-2 right-2 rounded bg-slate-100 px-2 py-1 font-mono text-xs dark:bg-slate-800">
-    {italic ? 'italic' : 'regular'}
+  <div
+    class="absolute right-2 bottom-2 rounded bg-slate-100 px-2 py-1 font-mono text-xs dark:bg-slate-800"
+  >
+    {italic ? "italic" : "regular"}
   </div>
   {specimen.map((line) => <span>{line}</span>)}
 </div>

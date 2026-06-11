@@ -1,15 +1,15 @@
-import confetti from 'canvas-confetti';
-import type { CodingFont } from './codingFonts';
+import confetti from "canvas-confetti";
+import type { CodingFont } from "./codingFonts";
 
 export enum TournamentEliminationMode {
-  Single = 'single',
-  Double = 'double'
+  Single = "single",
+  Double = "double",
 }
 
 export enum TournamentBracketType {
-  Winners = 'winners',
-  Losers = 'losers',
-  Final = 'final'
+  Winners = "winners",
+  Losers = "losers",
+  Final = "final",
 }
 
 export type TournamentEntry = {
@@ -55,7 +55,7 @@ export type TournamentGame = {
   scheduleRound?: (
     bracket: TournamentBracketType,
     entries: TournamentEntry[] | TournamentEntry[][],
-    entriesAreGrouped?: boolean
+    entriesAreGrouped?: boolean,
   ) => boolean;
   getPlayerLosses?: (player: CodingFont) => number;
 };
@@ -65,33 +65,36 @@ export type CreateGameOptions = {
 };
 
 export function createConfetti(
-  size: 'big' | 'small' = 'big',
-  position = { x: 0.5, y: 0.5 }
+  size: "big" | "small" = "big",
+  position = { x: 0.5, y: 0.5 },
 ) {
   const options: confetti.Options = {
     particleCount: 400,
     spread: 200,
     origin: {
       x: position.x,
-      y: position.y
-    }
+      y: position.y,
+    },
   };
 
-  if (size === 'small') {
+  if (size === "small") {
     options.particleCount = 30;
     options.spread = 200;
     options.startVelocity = 20;
   }
 
-  confetti.create(document.getElementById('canvas') as HTMLCanvasElement | undefined, {
-    resize: true,
-    useWorker: true
-  })(options);
+  confetti.create(
+    document.getElementById("canvas") as HTMLCanvasElement | undefined,
+    {
+      resize: true,
+      useWorker: true,
+    },
+  )(options);
 }
 
 export function createGame(
   initialPlayers: CodingFont[],
-  options: CreateGameOptions = {}
+  options: CreateGameOptions = {},
 ): TournamentGame {
   const players = [...initialPlayers];
   const eliminationMode =
@@ -114,7 +117,7 @@ export function createGame(
     bracket: TournamentBracketType,
     roundIndex: number,
     entries: TournamentEntry[],
-    winnerSlot: number
+    winnerSlot: number,
   ): TournamentMatch {
     const matchPlayers = entries.map((entry) => entry.player);
     const match: TournamentMatch = {
@@ -124,7 +127,7 @@ export function createGame(
       sourceSlots: entries.map((entry) => entry.sourceSlot),
       winner: null,
       loser: null,
-      winnerSlot
+      winnerSlot,
     };
 
     if (matchPlayers.length === 1) {
@@ -140,7 +143,9 @@ export function createGame(
     }
 
     const winner = match.winner;
-    return match.players.find((player) => player.family !== winner.family) ?? null;
+    return (
+      match.players.find((player) => player.family !== winner.family) ?? null
+    );
   }
 
   function createSingleEliminationTournament(): TournamentGame {
@@ -160,7 +165,9 @@ export function createGame(
           nextMatchup = this.getNextMatchup();
         }
 
-        return nextMatchup ?? (this.champion ? { winner: this.champion } : null);
+        return (
+          nextMatchup ?? (this.champion ? { winner: this.champion } : null)
+        );
       },
 
       setWinner: function (selectedPlayer: CodingFont) {
@@ -169,7 +176,7 @@ export function createGame(
         if (
           matchup &&
           matchup.players.find(
-            (player: CodingFont) => player.family === selectedPlayer.family
+            (player: CodingFont) => player.family === selectedPlayer.family,
           )
         ) {
           matchup.winner = selectedPlayer;
@@ -183,10 +190,10 @@ export function createGame(
           this.finalRound = this.currentRound;
           this.champion = selectedPlayer;
           return {
-            winner: selectedPlayer
+            winner: selectedPlayer,
           };
         } else {
-          console.error('Invalid winner or no available matchup.');
+          console.error("Invalid winner or no available matchup.");
         }
       },
 
@@ -196,10 +203,15 @@ export function createGame(
 
         if (this.rounds.length > 0) {
           winners = this.rounds[this.currentRound - 1]
-            .filter((matchup: TournamentMatch): matchup is TournamentMatch & { winner: CodingFont } => Boolean(matchup.winner))
+            .filter(
+              (
+                matchup: TournamentMatch,
+              ): matchup is TournamentMatch & { winner: CodingFont } =>
+                Boolean(matchup.winner),
+            )
             .map((matchup: TournamentMatch & { winner: CodingFont }) => ({
               player: matchup.winner,
-              sourceSlot: matchup.winnerSlot
+              sourceSlot: matchup.winnerSlot,
             }))
             .concat(this.pendingByes ?? []);
           this.pendingByes = [];
@@ -214,17 +226,17 @@ export function createGame(
             playInMatchCount > 0
               ? players.slice(0, playInPlayerCount).map((player, index) => ({
                   player,
-                  sourceSlot: Math.floor(index / 2)
+                  sourceSlot: Math.floor(index / 2),
                 }))
               : players.map((player, index) => ({
                   player,
-                  sourceSlot: index
+                  sourceSlot: index,
                 }));
           this.pendingByes =
             playInMatchCount > 0
               ? players.slice(playInPlayerCount).map((player, index) => ({
                   player,
-                  sourceSlot: playInMatchCount + index
+                  sourceSlot: playInMatchCount + index,
                 }))
               : [];
         }
@@ -240,8 +252,8 @@ export function createGame(
               TournamentBracketType.Winners,
               this.currentRound,
               entries,
-              matchupIndex
-            )
+              matchupIndex,
+            ),
           );
         }
 
@@ -260,7 +272,7 @@ export function createGame(
           currentRoundMatches &&
           currentRoundMatches.find((match: TournamentMatch) => !match.winner)
         );
-      }
+      },
     };
     return tournament;
   }
@@ -284,7 +296,7 @@ export function createGame(
       bracketRoundIndexes: {
         [TournamentBracketType.Winners]: 0,
         [TournamentBracketType.Losers]: 0,
-        [TournamentBracketType.Final]: 0
+        [TournamentBracketType.Final]: 0,
       },
 
       startGame: function () {
@@ -298,7 +310,9 @@ export function createGame(
           nextMatchup = this.getNextMatchup();
         }
 
-        return nextMatchup ?? (this.champion ? { winner: this.champion } : null);
+        return (
+          nextMatchup ?? (this.champion ? { winner: this.champion } : null)
+        );
       },
 
       setWinner: function (selectedPlayer: CodingFont) {
@@ -307,7 +321,7 @@ export function createGame(
         if (
           matchup &&
           matchup.players.find(
-            (player: CodingFont) => player.family === selectedPlayer.family
+            (player: CodingFont) => player.family === selectedPlayer.family,
           )
         ) {
           matchup.winner = selectedPlayer;
@@ -322,7 +336,7 @@ export function createGame(
             this.finalRound = this.currentRound;
             this.champion = selectedPlayer;
             return {
-              winner: selectedPlayer
+              winner: selectedPlayer,
             };
           }
 
@@ -333,7 +347,7 @@ export function createGame(
 
           return this.champion ? { winner: this.champion } : null;
         } else {
-          console.error('Invalid winner or no available matchup.');
+          console.error("Invalid winner or no available matchup.");
         }
       },
 
@@ -343,7 +357,7 @@ export function createGame(
         if (this.rounds.length === 0) {
           return this.scheduleRound(
             TournamentBracketType.Winners,
-            this.createInitialWinnersEntries()
+            this.createInitialWinnersEntries(),
           );
         }
 
@@ -351,20 +365,20 @@ export function createGame(
           return this.scheduleRound(
             TournamentBracketType.Losers,
             this.createLosersRoundEntryGroups(),
-            true
+            true,
           );
         }
 
         if (this.winnersPool.length === 1 && this.losersPool.length === 1) {
           return this.scheduleRound(TournamentBracketType.Final, [
             this.winnersPool[0],
-            this.losersPool[0]
+            this.losersPool[0],
           ]);
         }
 
         if (this.winnersPool.length > 1) {
           const nextWinnersRoundLoserCount = Math.floor(
-            this.winnersPool.length / 2
+            this.winnersPool.length / 2,
           );
 
           if (
@@ -374,13 +388,13 @@ export function createGame(
             return this.scheduleRound(
               TournamentBracketType.Losers,
               this.createLosersRoundEntryGroups(),
-              true
+              true,
             );
           }
 
           return this.scheduleRound(
             TournamentBracketType.Winners,
-            this.winnersPool
+            this.winnersPool,
           );
         }
 
@@ -388,7 +402,7 @@ export function createGame(
           return this.scheduleRound(
             TournamentBracketType.Losers,
             this.createLosersRoundEntryGroups(),
-            true
+            true,
           );
         }
 
@@ -405,7 +419,10 @@ export function createGame(
         }
 
         const round = this.rounds[this.currentRound];
-        if (!round?.length || round.some((match: TournamentMatch) => !match.winner)) {
+        if (
+          !round?.length ||
+          round.some((match: TournamentMatch) => !match.winner)
+        ) {
           return;
         }
 
@@ -415,26 +432,30 @@ export function createGame(
           this.winnersPool = round
             .map((match: TournamentMatch & { winner: CodingFont }) => ({
               player: match.winner,
-              sourceSlot: match.winnerSlot
+              sourceSlot: match.winnerSlot,
             }))
             .concat(this.pendingWinnersEntries);
           this.pendingWinnersEntries = [];
           this.pendingLosersDropIns = this.pendingLosersDropIns.concat(
-            round.filter((match: TournamentMatch) => match.loser).map((match: TournamentMatch & { loser: CodingFont }) => ({
-              player: match.loser,
-              // Dropped winners-bracket players do not have a source match
-              // inside the losers bracket, so the SVG should not connect
-              // them to a previous losers-round slot.
-              sourceSlot: null
-            }))
+            round
+              .filter((match: TournamentMatch) => match.loser)
+              .map((match: TournamentMatch & { loser: CodingFont }) => ({
+                player: match.loser,
+                // Dropped winners-bracket players do not have a source match
+                // inside the losers bracket, so the SVG should not connect
+                // them to a previous losers-round slot.
+                sourceSlot: null,
+              })),
           );
         }
 
         if (bracket === TournamentBracketType.Losers) {
-          this.losersPool = round.map((match: TournamentMatch & { winner: CodingFont }) => ({
-            player: match.winner,
-            sourceSlot: match.winnerSlot
-          }));
+          this.losersPool = round.map(
+            (match: TournamentMatch & { winner: CodingFont }) => ({
+              player: match.winner,
+              sourceSlot: match.winnerSlot,
+            }),
+          );
         }
       },
 
@@ -446,7 +467,7 @@ export function createGame(
         if (playInMatchCount === 0) {
           return players.map((player, index) => ({
             player,
-            sourceSlot: index
+            sourceSlot: index,
           }));
         }
 
@@ -454,12 +475,12 @@ export function createGame(
           .slice(playInPlayerCount)
           .map((player, index) => ({
             player,
-            sourceSlot: playInMatchCount + index
+            sourceSlot: playInMatchCount + index,
           }));
 
         return players.slice(0, playInPlayerCount).map((player, index) => ({
           player,
-          sourceSlot: Math.floor(index / 2)
+          sourceSlot: Math.floor(index / 2),
         }));
       },
 
@@ -489,9 +510,13 @@ export function createGame(
           .concat(
             survivors
               .slice(pairedEntryCount)
-              .map((survivor: TournamentEntry) => [survivor])
+              .map((survivor: TournamentEntry) => [survivor]),
           )
-          .concat(dropIns.slice(pairedEntryCount).map((dropIn: TournamentEntry) => [dropIn]));
+          .concat(
+            dropIns
+              .slice(pairedEntryCount)
+              .map((dropIn: TournamentEntry) => [dropIn]),
+          );
       },
 
       createEntryPairs: function (entries: TournamentEntry[]) {
@@ -507,7 +532,7 @@ export function createGame(
       scheduleRound: function (
         bracket: TournamentBracketType,
         entries: TournamentEntry[] | TournamentEntry[][],
-        entriesAreGrouped = false
+        entriesAreGrouped = false,
       ) {
         const bracketRoundIndex = this.bracketRoundIndexes[bracket]++;
         const round: TournamentMatch[] = [];
@@ -517,12 +542,7 @@ export function createGame(
 
         entryGroups.forEach((entryGroup: TournamentEntry[]) => {
           round.push(
-            createMatch(
-              bracket,
-              bracketRoundIndex,
-              entryGroup,
-              round.length
-            )
+            createMatch(bracket, bracketRoundIndex, entryGroup, round.length),
           );
         });
 
@@ -558,7 +578,7 @@ export function createGame(
 
       getPlayerLosses: function (player: CodingFont) {
         return playerLosses.get(player.family) ?? 0;
-      }
+      },
     };
     return tournament;
   }

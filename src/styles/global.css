@@ -92,189 +92,188 @@
 
 /* Load JetBrains Mono */
 @font-face {
-  font-family: 'JetBrains Mono';
+  font-family: "JetBrains Mono";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono@2.304/fonts/webfonts/JetBrainsMono-Regular.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono@2.304/fonts/webfonts/JetBrainsMono-Regular.woff2")
+    format("woff2");
 }
 @font-face {
-  font-family: 'JetBrains Mono';
+  font-family: "JetBrains Mono";
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono@2.304/fonts/webfonts/JetBrainsMono-Italic.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/gh/JetBrains/JetBrainsMono@2.304/fonts/webfonts/JetBrainsMono-Italic.woff2")
+    format("woff2");
 }
 
 /* Load Cascadia Code */
 @font-face {
-  font-family: 'Cascadia Code';
+  font-family: "Cascadia Code";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('./fonts/CascadiaCode-Regular.woff2') format('woff2');
+  src: url("./fonts/CascadiaCode-Regular.woff2") format("woff2");
 }
 @font-face {
-  font-family: 'Cascadia Code';
+  font-family: "Cascadia Code";
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('./fonts/CascadiaCode-Italic.woff2') format('woff2');
+  src: url("./fonts/CascadiaCode-Italic.woff2") format("woff2");
 }
 
 /* Load Paper Mono */
 @font-face {
-  font-family: 'Paper Mono';
+  font-family: "Paper Mono";
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/paper-design/paper-mono@main/fonts/webfonts/PaperMono%5Bwght%5D.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/gh/paper-design/paper-mono@main/fonts/webfonts/PaperMono%5Bwght%5D.woff2")
+    format("woff2");
 }
 
 /* Load Commit Mono */
 @font-face {
-  font-family: 'Commit Mono';
+  font-family: "Commit Mono";
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/eigilnikolajsen/commit-mono@main/src/fonts/fontlab/CommitMonoV143-VF.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/gh/eigilnikolajsen/commit-mono@main/src/fonts/fontlab/CommitMonoV143-VF.woff2")
+    format("woff2");
 }
 @font-face {
-  font-family: 'Commit Mono';
+  font-family: "Commit Mono";
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/eigilnikolajsen/commit-mono@main/src/fonts/fontlab/CommitMonoV143-400Italic.otf')
-    format('opentype');
+  src: url("https://cdn.jsdelivr.net/gh/eigilnikolajsen/commit-mono@main/src/fonts/fontlab/CommitMonoV143-400Italic.otf")
+    format("opentype");
 }
 
 /* Load 0xProto */
 @font-face {
-  font-family: '0xProto';
+  font-family: "0xProto";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/0xType/0xProto@main/fonts/0xProto-Regular.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/gh/0xType/0xProto@main/fonts/0xProto-Regular.woff2")
+    format("woff2");
 }
 @font-face {
-  font-family: '0xProto';
+  font-family: "0xProto";
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/0xType/0xProto@main/fonts/0xProto-Italic.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/gh/0xType/0xProto@main/fonts/0xProto-Italic.woff2")
+    format("woff2");
 }
 
 /* Load SF Mono */
 @font-face {
-  font-family: 'SF Mono';
+  font-family: "SF Mono";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('./fonts/SF-Mono-Regular.otf') format('opentype');
+  src: url("./fonts/SF-Mono-Regular.otf") format("opentype");
 }
 @font-face {
-  font-family: 'SF Mono';
+  font-family: "SF Mono";
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('./fonts/SF-Mono-RegularItalic.otf') format('opentype');
+  src: url("./fonts/SF-Mono-RegularItalic.otf") format("opentype");
 }
 
 /* Load Monaspace Argon */
 @font-face {
-  font-family: 'Monaspace Argon';
+  font-family: "Monaspace Argon";
   font-style: normal;
   font-weight: 200 800;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/githubnext/monaspace@main/fonts/Web%20Fonts/Variable%20Web%20Fonts/Monaspace%20Argon/Monaspace%20Argon%20Var.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/gh/githubnext/monaspace@main/fonts/Web%20Fonts/Variable%20Web%20Fonts/Monaspace%20Argon/Monaspace%20Argon%20Var.woff2")
+    format("woff2");
 }
 @font-face {
-  font-family: 'Monaspace Argon';
+  font-family: "Monaspace Argon";
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/githubnext/monaspace@main/fonts/Web%20Fonts/Static%20Web%20Fonts/Monaspace%20Argon/MonaspaceArgon-Italic.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/gh/githubnext/monaspace@main/fonts/Web%20Fonts/Static%20Web%20Fonts/Monaspace%20Argon/MonaspaceArgon-Italic.woff2")
+    format("woff2");
 }
-
 
 /* Load Monaspace Neon */
 @font-face {
-  font-family: 'Monaspace Neon';
+  font-family: "Monaspace Neon";
   font-style: normal;
   font-weight: 200 800;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/githubnext/monaspace@main/fonts/Web%20Fonts/Variable%20Web%20Fonts/Monaspace%20Neon/Monaspace%20Neon%20Var.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/gh/githubnext/monaspace@main/fonts/Web%20Fonts/Variable%20Web%20Fonts/Monaspace%20Neon/Monaspace%20Neon%20Var.woff2")
+    format("woff2");
 }
 @font-face {
-  font-family: 'Monaspace Neon';
+  font-family: "Monaspace Neon";
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/githubnext/monaspace@main/fonts/Web%20Fonts/Static%20Web%20Fonts/Monaspace%20Neon/MonaspaceNeon-Italic.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/gh/githubnext/monaspace@main/fonts/Web%20Fonts/Static%20Web%20Fonts/Monaspace%20Neon/MonaspaceNeon-Italic.woff2")
+    format("woff2");
 }
 
 /* Load Lilex */
 @font-face {
-  font-family: 'Lilex';
+  font-family: "Lilex";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/mishamyrt/Lilex@2.700/fonts/Lilex/webfonts/Lilex-Regular.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/gh/mishamyrt/Lilex@2.700/fonts/Lilex/webfonts/Lilex-Regular.woff2")
+    format("woff2");
 }
 @font-face {
-  font-family: 'Lilex';
+  font-family: "Lilex";
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/mishamyrt/Lilex@2.700/fonts/Lilex/webfonts/Lilex-Italic.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/gh/mishamyrt/Lilex@2.700/fonts/Lilex/webfonts/Lilex-Italic.woff2")
+    format("woff2");
 }
 
 /* Load Geist Mono */
 @font-face {
-  font-family: 'Geist Mono';
+  font-family: "Geist Mono";
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/vercel/geist-font@main/fonts/GeistMono/webfonts/GeistMono%5Bwght%5D.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/gh/vercel/geist-font@main/fonts/GeistMono/webfonts/GeistMono%5Bwght%5D.woff2")
+    format("woff2");
 }
 @font-face {
-  font-family: 'Geist Mono';
+  font-family: "Geist Mono";
   font-style: italic;
   font-weight: 100 900;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/vercel/geist-font@main/fonts/GeistMono/webfonts/GeistMono-Italic%5Bwght%5D.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/gh/vercel/geist-font@main/fonts/GeistMono/webfonts/GeistMono-Italic%5Bwght%5D.woff2")
+    format("woff2");
 }
 
 /* Load Hack */
 @font-face {
-  font-family: 'Hack';
+  font-family: "Hack";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/fonts/hack-regular-subset.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/fonts/hack-regular-subset.woff2")
+    format("woff2");
 }
 @font-face {
-  font-family: 'Hack';
+  font-family: "Hack";
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/fonts/hack-italic-subset.woff2')
-    format('woff2');
+  src: url("https://cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/fonts/hack-italic-subset.woff2")
+    format("woff2");
 }
 
 /* ---- Code specimen (Shiki, static) ---- */
@@ -288,13 +287,13 @@
   /* feature-settings selected by root data-* (default: both on) */
   font-feature-settings: var(--feat-both, normal);
 }
-html[data-ligatures='0'][data-opentype='1'] .code-specimen {
+html[data-ligatures="0"][data-opentype="1"] .code-specimen {
   font-feature-settings: var(--feat-ot, normal);
 }
-html[data-ligatures='1'][data-opentype='0'] .code-specimen {
+html[data-ligatures="1"][data-opentype="0"] .code-specimen {
   font-feature-settings: var(--feat-lig, normal);
 }
-html[data-ligatures='0'][data-opentype='0'] .code-specimen {
+html[data-ligatures="0"][data-opentype="0"] .code-specimen {
   font-feature-settings: normal;
 }
 
@@ -303,8 +302,10 @@ html[data-ligatures='0'][data-opentype='0'] .code-specimen {
   display: none;
   min-height: 0;
 }
-html:not([data-code-lang='python']) .code-specimen .code-lang[data-lang='typescript'],
-html[data-code-lang='python'] .code-specimen .code-lang[data-lang='python'] {
+html:not([data-code-lang="python"])
+  .code-specimen
+  .code-lang[data-lang="typescript"],
+html[data-code-lang="python"] .code-specimen .code-lang[data-lang="python"] {
   display: flex;
   flex-direction: column;
 }
@@ -332,22 +333,21 @@ html[data-code-lang='python'] .code-specimen .code-lang[data-lang='python'] {
 .code-specimen .shiki span {
   color: var(--shiki-vs-dark);
 }
-html[data-code-theme='vs'] .code-specimen .shiki {
+html[data-code-theme="vs"] .code-specimen .shiki {
   background-color: var(--shiki-vs-bg);
 }
-html[data-code-theme='vs'] .code-specimen .shiki span {
+html[data-code-theme="vs"] .code-specimen .shiki span {
   color: var(--shiki-vs);
 }
-html[data-code-theme='hc-black'] .code-specimen .shiki {
+html[data-code-theme="hc-black"] .code-specimen .shiki {
   background-color: var(--shiki-hc-black-bg);
 }
-html[data-code-theme='hc-black'] .code-specimen .shiki span {
+html[data-code-theme="hc-black"] .code-specimen .shiki span {
   color: var(--shiki-hc-black);
 }
-html[data-code-theme='hc-light'] .code-specimen .shiki {
+html[data-code-theme="hc-light"] .code-specimen .shiki {
   background-color: var(--shiki-hc-light-bg);
 }
-html[data-code-theme='hc-light'] .code-specimen .shiki span {
+html[data-code-theme="hc-light"] .code-specimen .shiki span {
   color: var(--shiki-hc-light);
 }
-

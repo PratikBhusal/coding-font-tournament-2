@@ -1,12 +1,12 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import AppShell from '../layouts/AppShell.astro';
-import Header from '../components/Header.astro';
-import Controls from '../components/Controls.astro';
-import TournamentSidebar from '../components/TournamentSidebar';
-import TournamentBoard from '../components/TournamentBoard';
-import codingFonts from '../lib/codingFonts';
-import { highlightAllSamples } from '../lib/highlight';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AppShell from "../layouts/AppShell.astro";
+import Header from "../components/Header.astro";
+import Controls from "../components/Controls.astro";
+import TournamentSidebar from "../components/TournamentSidebar";
+import TournamentBoard from "../components/TournamentBoard";
+import codingFonts from "../lib/codingFonts";
+import { highlightAllSamples } from "../lib/highlight";
 
 const highlighted = await highlightAllSamples();
 ---
@@ -19,7 +19,9 @@ const highlighted = await highlightAllSamples();
     <Header slot="header" path="/" />
     <Controls slot="controls" />
     <TournamentSidebar slot="sidebar" fonts={codingFonts} client:load />
-    <canvas id="canvas" class="pointer-events-none fixed inset-0 z-50 h-full w-full"></canvas>
+    <canvas
+      id="canvas"
+      class="pointer-events-none fixed inset-0 z-50 h-full w-full"></canvas>
     <TournamentBoard highlighted={highlighted} client:only="solid-js" />
   </AppShell>
 </BaseLayout>

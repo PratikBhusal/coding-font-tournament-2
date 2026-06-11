@@ -1,11 +1,11 @@
-export const DEFAULT_LANGUAGE = 'typescript';
+export const DEFAULT_LANGUAGE = "typescript";
 
 export const sampleLanguages = [
-  { id: 'typescript', displayName: 'TypeScript' },
-  { id: 'python', displayName: 'Python' }
+  { id: "typescript", displayName: "TypeScript" },
+  { id: "python", displayName: "Python" },
 ] as const;
 
-export type SampleLanguage = (typeof sampleLanguages)[number]['id'];
+export type SampleLanguage = (typeof sampleLanguages)[number]["id"];
 
 export const sampleCodeByLanguage: Record<SampleLanguage, string> = {
   typescript: `// This is a single-line comment example
@@ -55,5 +55,5 @@ def is_multiple_of(num: int, multiple: int) -> None:
     for index in range(1, 11):
         value = num * index
         print(f"{value} -> {value % multiple == 0}")
-`
+`,
 };
