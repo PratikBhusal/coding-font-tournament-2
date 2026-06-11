@@ -2,28 +2,28 @@ import { test, expect } from '@playwright/test';
 
 test.describe('browse (/browse)', () => {
   test('renders static highlighted code (no island)', async ({ page }) => {
-    await page.goto('/browse');
+    await page.goto('browse');
     await expect(page.locator('.code-specimen .shiki').first()).toBeVisible();
     // Page chrome is static — no Solid island on browse.
     await expect(page.locator('astro-island')).toHaveCount(0);
   });
 
   test('search filters the font table', async ({ page }) => {
-    await page.goto('/browse');
+    await page.goto('browse');
     await page.fill('#font-search', 'jetbrains');
     await expect(page.locator('tr[data-search*="jetbrains"]')).toBeVisible();
     await expect(page.locator('tr[data-search*="fira code"]')).toBeHidden();
   });
 
   test('theme dropdown updates the code theme (mobile change event)', async ({ page }) => {
-    await page.goto('/browse');
+    await page.goto('browse');
     await expect(page.locator('html')).toHaveAttribute('data-code-theme', 'vs-dark');
     await page.selectOption('#ctrl-theme', 'vs');
     await expect(page.locator('html')).toHaveAttribute('data-code-theme', 'vs');
   });
 
   test('language dropdown switches the visible snippet', async ({ page }) => {
-    await page.goto('/browse');
+    await page.goto('browse');
     // Assert computed display (viewport-independent) rather than size-based visibility.
     const display = (selector: string) =>
       page.locator(selector).first().evaluate((el) => getComputedStyle(el).display);
@@ -41,7 +41,7 @@ test.describe('browse (/browse)', () => {
   });
 
   test('clicking a font previews it in place; maximize navigates', async ({ page }) => {
-    await page.goto('/browse');
+    await page.goto('browse');
     const specimen = page.locator('#browse-specimen');
 
     // Clicking the row's name cell swaps the preview font without leaving /browse.
@@ -57,7 +57,7 @@ test.describe('browse (/browse)', () => {
   });
 
   test('Compare opens a second view in place (no navigation)', async ({ page }) => {
-    await page.goto('/browse');
+    await page.goto('browse');
     await page.locator('tr[data-family="Fira Code"] td').first().click();
 
     const compare = page.locator('#browse-compare');
@@ -74,7 +74,7 @@ test.describe('browse (/browse)', () => {
   });
 
   test('gear toggles the sidebar (open by default on every viewport)', async ({ page }) => {
-    await page.goto('/browse');
+    await page.goto('browse');
     const sidebar = page.locator('#app-sidebar');
 
     // `sidebarDefaultOpen` opens it on desktop and mobile alike.
@@ -86,7 +86,7 @@ test.describe('browse (/browse)', () => {
   });
 
   test('theme choice persists across a reload', async ({ page }) => {
-    await page.goto('/browse');
+    await page.goto('browse');
     await page.selectOption('#ctrl-theme', 'hc-light');
     await expect(page.locator('html')).toHaveAttribute('data-code-theme', 'hc-light');
     await page.reload();

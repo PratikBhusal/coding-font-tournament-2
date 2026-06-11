@@ -29,7 +29,8 @@ const selectAttrs = (font: CodingFont) =>
         'data-feat-lig': getFontFeatures(font, false, true) || 'normal',
         'data-feat-ot': getFontFeatures(font, true, false) || 'normal',
         'data-display-name': getFontDisplayName(font),
-        'data-slug': getFontPath(font.family),
+        'data-slug': getFontSlug(font.family),
+        'data-path': getFontPath(font.family),
         'data-site-url': font.siteUrl,
         'data-download-url': font.downloadUrl,
         'data-system': font.isSystemFont ? '1' : '0'

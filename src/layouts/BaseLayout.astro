@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import { Seo } from 'astro-seo-meta';
+import { withBase } from '../lib/routes';
 
 type Props = {
   title: string;
@@ -19,8 +20,8 @@ const { title, description = defaultDescription, keywords = defaultKeywords } = 
 <html lang="en" class="h-full overflow-hidden">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link rel="icon" href={withBase('/favicon.ico')} />
     <meta name="viewport" content="width=device-width" />
     <!-- Warm up the font hosts and load the Google Fonts CSS from the HTML (not a CSS
          @import) so it's discovered early and doesn't extend the critical chain. -->

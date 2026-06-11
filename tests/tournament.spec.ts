@@ -4,14 +4,14 @@ test.describe('tournament (/)', () => {
   test('renders code specimens after a full page load', async ({ page }) => {
     // Regression: the island must populate the board on a fresh load (no hydration
     // mismatch leaving an empty board). Covers desktop and mobile (grid row height).
-    await page.goto('/');
+    await page.goto('./');
     await expect(page.locator('.code-specimen .shiki').first()).toBeVisible();
   });
 
   test('font pool sidebar: open by default on desktop, collapsed-then-toggle on mobile', async ({
     page
   }, testInfo) => {
-    await page.goto('/');
+    await page.goto('./');
     // Assert the sidebar's width, not the "Font Pool" text: when collapsed the aside
     // is width:0 + overflow:hidden, but the clipped text still has its own non-zero
     // box, which Playwright's visibility check (ignoring ancestor clipping) treats as
@@ -34,14 +34,14 @@ test.describe('tournament (/)', () => {
   });
 
   test('hides the SVG button until there is a winner', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('./');
     // Board is mid-tournament on load, so no champion yet.
     await expect(page.locator('.code-specimen .shiki').first()).toBeVisible();
     await expect(page.getByRole('button', { name: 'Download SVG' })).toHaveCount(0);
   });
 
   test('reaching a winner hides Show Name and shows Download SVG beside New Run', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('./');
     await expect(page.locator('.code-specimen .shiki').first()).toBeVisible();
 
     // Mid-tournament the Show Name toggle is present; the winner controls are not.
@@ -68,7 +68,7 @@ test.describe('tournament (/)', () => {
   });
 
   test('SVG export embeds theme colors resolved from CSS variables', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('./');
     await expect(page.locator('.code-specimen .shiki').first()).toBeVisible();
 
     // Play to a champion so the export is available.
@@ -97,7 +97,7 @@ test.describe('tournament (/)', () => {
   });
 
   test('mobile nav menu: hamburger reveals Tournament/Browse links', async ({ page }, testInfo) => {
-    await page.goto('/');
+    await page.goto('./');
     const navToggle = page.locator('#app-nav-toggle');
     const navMenu = page.locator('#app-nav-menu');
 

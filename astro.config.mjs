@@ -9,6 +9,9 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://pratikbhusal.github.io',
+  base: '/coding-font-tournament',
+
   integrations: [solidJs(), sitemap()],
 
   vite: {

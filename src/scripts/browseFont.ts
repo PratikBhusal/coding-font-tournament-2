@@ -12,8 +12,6 @@ function setLink(id: string, href: string | undefined, hide: boolean) {
   if (href) el.href = href;
 }
 
-const slugOf = (path: string | undefined) => (path ?? '').replace(/^\//, '');
-
 /**
  * Paint one font view (header + specimen) from a table row's data attributes.
  * `prefix` selects the element ids: `${prefix}-name`, `-visit`, `-download`,
@@ -41,12 +39,17 @@ function paintView(prefix: string, d: DOMStringMap, maximizeHref: string) {
   setLink(`${prefix}-maximize`, maximizeHref, false);
 }
 
-/** Point every Compare link at "/<selected>/<row>", hiding the selected font's own. */
-function refreshCompareLinks(selectedSlug: string) {
+/**
+ * Point every Compare link at "<selectedPath>/<rowSlug>", hiding the selected
+ * font's own. `selectedPath` is the base-prefixed font path (e.g. /base/Left);
+ * `cmp`/`selectedSlug` are bare slugs used only for identity + the trailing
+ * segment, so no base handling is needed here.
+ */
+function refreshCompareLinks(selectedPath: string, selectedSlug: string) {
   for (const link of document.querySelectorAll<HTMLAnchorElement>('a.compare-link')) {
     const cmp = link.dataset.compareSlug ?? '';
     link.hidden = cmp === selectedSlug;
-    link.href = `/${selectedSlug}/${cmp}`;
+    link.href = `${selectedPath}/${cmp}`;
   }
 }
 
@@ -61,20 +64,20 @@ function highlightRow(active: HTMLElement) {
 /** Apply a row's font to the primary (left) view and exit any active comparison. */
 function applyFont(row: HTMLElement) {
   const d = row.dataset;
-  paintView('browse', d, d.slug ?? '');
+  paintView('browse', d, d.path ?? '');
 
   const name = document.getElementById('browse-name');
   if (name) name.dataset.family = d.family ?? '';
 
   closeCompare();
-  refreshCompareLinks(slugOf(d.slug));
+  refreshCompareLinks(d.path ?? '', d.slug ?? '');
   highlightRow(row);
 }
 
 /** Show the right-hand view comparing `row`'s font against the current selection. */
 function openCompare(row: HTMLElement) {
   const selectedPath = document.getElementById('browse-maximize')?.getAttribute('href') ?? '';
-  paintView('browse-compare', row.dataset, `${selectedPath}/${slugOf(row.dataset.slug)}`);
+  paintView('browse-compare', row.dataset, `${selectedPath}/${row.dataset.slug ?? ''}`);
 
   const compare = document.getElementById('browse-compare');
   const board = document.getElementById('browse-board');

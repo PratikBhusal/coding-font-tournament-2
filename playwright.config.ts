@@ -1,7 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const PORT = 4321;
-const baseURL = `http://localhost:${PORT}`;
+// Mirrors `base` in astro.config.mjs (trailing slash so relative gotos resolve
+// under the sub-path). Tests use relative URLs (e.g. goto('browse')).
+const baseURL = `http://localhost:${PORT}/coding-font-tournament/`;
 
 /** See https://playwright.dev/docs/test-configuration. */
 export default defineConfig({

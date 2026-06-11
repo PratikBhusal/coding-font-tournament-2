@@ -114,14 +114,14 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/CascadiaCode-Regular.woff2') format('woff2');
+  src: url('./fonts/CascadiaCode-Regular.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Cascadia Code';
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/CascadiaCode-Italic.woff2') format('woff2');
+  src: url('./fonts/CascadiaCode-Italic.woff2') format('woff2');
 }
 
 /* Load Paper Mono */
@@ -176,14 +176,14 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/SF-Mono-Regular.otf') format('opentype');
+  src: url('./fonts/SF-Mono-Regular.otf') format('opentype');
 }
 @font-face {
   font-family: 'SF Mono';
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/SF-Mono-RegularItalic.otf') format('opentype');
+  src: url('./fonts/SF-Mono-RegularItalic.otf') format('opentype');
 }
 
 /* Load Monaspace Argon */

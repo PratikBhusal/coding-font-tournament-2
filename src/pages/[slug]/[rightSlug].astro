@@ -10,7 +10,7 @@ import Specimen from '../../components/Specimen.astro';
 import CodeSpecimen from '../../components/CodeSpecimen.astro';
 import codingFonts from '../../lib/codingFonts';
 import { getFontDisplayName } from '../../lib/fontFeatures';
-import { getFontPath, getFontSlug } from '../../lib/routes';
+import { getFontPath, getFontSlug, withBase } from '../../lib/routes';
 
 export function getStaticPaths() {
   return codingFonts.flatMap((font) =>
@@ -42,7 +42,7 @@ const compareName = getFontDisplayName(compareFont);
     <Controls slot="controls" />
     <div slot="sidebar" class="flex flex-col gap-4">
       <ol class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-        <li><a class="text-blue-700 underline dark:text-blue-300" href="/browse">Browse</a></li>
+        <li><a class="text-blue-700 underline dark:text-blue-300" href={withBase('/browse')}>Browse</a></li>
         <li aria-hidden>&rsaquo;</li>
         <li>{getFontDisplayName(font)}</li>
       </ol>

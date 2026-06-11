@@ -1,4 +1,6 @@
 ---
+import { withBase } from '../lib/routes';
+
 type Props = {
   path?: string;
   canToggleSidebar?: boolean;
@@ -29,13 +31,13 @@ const { path = '/', canToggleSidebar = true } = Astro.props;
       >
         <a
           class={`px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 ${path === '/' ? 'bg-slate-100 dark:bg-slate-800' : ''}`}
-          href="/"
+          href={withBase('/')}
         >
           Tournament
         </a>
         <a
           class={`px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 ${path === '/browse' ? 'bg-slate-100 dark:bg-slate-800' : ''}`}
-          href="/browse"
+          href={withBase('/browse')}
         >
           Browse
         </a>
@@ -57,12 +59,12 @@ const { path = '/', canToggleSidebar = true } = Astro.props;
   </div>
 
   <nav class="hidden items-center gap-2 font-mono text-lg font-semibold md:flex">
-    <a class={`px-3 py-1 ${path === '/' ? "before:content-['<'] after:content-['>']" : ''}`} href="/">
+    <a class={`px-3 py-1 ${path === '/' ? "before:content-['<'] after:content-['>']" : ''}`} href={withBase('/')}>
       Tournament
     </a>
     <a
       class={`px-3 py-1 ${path === '/browse' ? "before:content-['<'] after:content-['>']" : ''}`}
-      href="/browse"
+      href={withBase('/browse')}
     >
       Browse
     </a>
