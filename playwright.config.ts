@@ -12,16 +12,28 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: "list",
+  // Locally, "list" prints per-test lines and writes no files. On CI the array form
+  // runs two reporters: "list" keeps that readable log, and "html" writes
+  // playwright-report/ for the workflow's upload-artifact step. `open: "never"` stops
+  // Playwright from launching a browser to show the report (its default on failure),
+  // which would stall the job.
+  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL,
     trace: "on-first-retry",
   },
 
   projects: [
-    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
-    // iPhone 13 runs WebKit — covers the mobile <select> change-event behavior.
-    { name: "mobile", use: { ...devices["iPhone 13"] } },
+    { name: "desktop-chromium", use: { ...devices["Desktop Chrome"] } },
+    { name: "desktop-firefox", use: { ...devices["Desktop Firefox"] } },
+    { name: "desktop-webkit", use: { ...devices["Desktop Safari"] } },
+    // Tests treat any "mobile-*" project as mobile; everything else is desktop.
+    // iPhone 15 runs WebKit — covers the mobile <select> change-event behavior.
+    { name: "mobile-iphone-15", use: { ...devices["iPhone 15"] } },
+    // Galaxy Z Flip and Pixel 10 aren't in Playwright's device registry, so we use
+    // the closest available presets: Galaxy S24 and Pixel 7.
+    { name: "mobile-pixel-10", use: { ...devices["Pixel 7"] } },
+    { name: "mobile-galaxy-z-flip", use: { ...devices["Galaxy S24"] } },
   ],
 
   webServer: {

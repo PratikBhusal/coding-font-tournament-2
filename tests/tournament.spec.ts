@@ -22,7 +22,7 @@ test.describe("tournament (/)", () => {
     // `app:menu-toggle` listener is registered before we interact.
     await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
 
-    if (testInfo.project.name === "desktop") {
+    if (!testInfo.project.name.startsWith("mobile")) {
       await expect(sidebar).not.toHaveCSS("width", "0px");
       return;
     }
@@ -41,7 +41,7 @@ test.describe("tournament (/)", () => {
 
     // Mobile: the sidebar is collapsed (width 0) by default, so open it before
     // interacting with the pool controls.
-    if (testInfo.project.name !== "desktop") {
+    if (testInfo.project.name.startsWith("mobile")) {
       await page.locator("#app-menu-toggle").click();
       await expect(page.getByTestId("tournament-sidebar")).not.toHaveCSS(
         "width",
@@ -191,7 +191,7 @@ test.describe("tournament (/)", () => {
     const navToggle = page.locator("#app-nav-toggle");
     const navMenu = page.locator("#app-nav-menu");
 
-    if (testInfo.project.name === "desktop") {
+    if (!testInfo.project.name.startsWith("mobile")) {
       // Replaced by the inline md+ nav.
       await expect(navToggle).toBeHidden();
       return;
