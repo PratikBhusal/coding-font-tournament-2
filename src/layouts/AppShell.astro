@@ -23,6 +23,7 @@ const { sidebarDefaultOpen = false, sidebarTestId } = Astro.props;
       style={`width: ${sidebarDefaultOpen ? "clamp(12rem, 33vw, 100vw)" : "0px"}`}
     >
       <div
+        id="app-sidebar-scroll"
         class="absolute inset-0 flex flex-col gap-4 overflow-auto border-r border-slate-300 bg-slate-100 p-4 pr-5 dark:border-slate-700 dark:bg-slate-900"
       >
         <slot name="sidebar" />
@@ -47,4 +48,22 @@ const { sidebarDefaultOpen = false, sidebarTestId } = Astro.props;
   import { initSidebar } from "../scripts/appShellSidebar";
   initSidebar();
   document.addEventListener("astro:page-load", initSidebar);
+
+  // Preserve the sidebar's scroll position across view-transition navigations
+  // (e.g. clicking a Compare link). Capture it before the swap, then restore it on
+  // page-load: the aside is server-rendered collapsed (width 0) and only opened by
+  // initSidebar on astro:page-load, so restoring earlier would clamp to 0 (no laid-out
+  // height). The rAF waits for that width/layout to apply. This page-load listener is
+  // registered after initSidebar's, so it runs once the sidebar is open.
+  let savedSidebarScroll = 0;
+  document.addEventListener("astro:before-swap", () => {
+    savedSidebarScroll =
+      document.getElementById("app-sidebar-scroll")?.scrollTop ?? 0;
+  });
+  document.addEventListener("astro:page-load", () => {
+    requestAnimationFrame(() => {
+      const el = document.getElementById("app-sidebar-scroll");
+      if (el) el.scrollTop = savedSidebarScroll;
+    });
+  });
 </script>
