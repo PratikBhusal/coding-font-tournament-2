@@ -7,7 +7,7 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { useStore } from "@nanostores/solid";
+import { useStore } from "../lib/useStore";
 import type { CodingFont } from "../lib/codingFonts";
 import {
   getCssFontFamily,
@@ -291,7 +291,7 @@ function createTournamentBoard(): TournamentBoardController {
       : [];
   const leftPlayer = () => currentPlayers()[0];
   const rightPlayer = () => currentPlayers()[1];
-  const champion = () => currentBracket()?.winner;
+  const champion = () => currentBracket()?.winner ?? undefined;
 
   function startGame(closeSidebar = false) {
     if (!$canStartTournament.get()) return;

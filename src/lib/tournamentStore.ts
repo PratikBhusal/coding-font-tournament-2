@@ -9,9 +9,17 @@ import { TournamentEliminationMode } from "./game";
 // format so existing stored values keep working).
 const json = { encode: JSON.stringify, decode: JSON.parse };
 
-export const $tournamentFamilies = persistentAtom<string[] | null>(
+// Default (curated) selection. Used as the atom's initial value so the server (under
+// client:load) and a first-visit client agree on the rendered selection — avoiding a
+// hydration mismatch. A stored value (including an empty array, a deliberate "clear")
+// takes precedence on the client.
+const initialFamilies = codingFonts
+  .filter((font) => font.includeInInitialTournament)
+  .map((font) => font.family);
+
+export const $tournamentFamilies = persistentAtom<string[]>(
   "tournamentFontFamilies",
-  null,
+  initialFamilies,
   json,
 );
 export const $eliminationMode = persistentAtom<TournamentEliminationMode>(
@@ -26,18 +34,8 @@ export const $savedTournamentResult = persistentAtom<any>(
   json,
 );
 
-// Seed the default (curated) selection once, the first time the app runs with no
-// stored selection. An empty array is a deliberate user choice and is left as-is.
-if (typeof window !== "undefined" && $tournamentFamilies.get() === null) {
-  $tournamentFamilies.set(
-    codingFonts
-      .filter((font) => font.includeInInitialTournament)
-      .map((font) => font.family),
-  );
-}
-
 export const $selectedFonts = computed($tournamentFamilies, (families) => {
-  const selected = new Set(families ?? []);
+  const selected = new Set(families);
   return codingFonts.filter((font) => selected.has(font.family));
 });
 export const $canStartTournament = computed(

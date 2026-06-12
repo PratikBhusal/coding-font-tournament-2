@@ -1,5 +1,5 @@
 import { type Accessor, createSignal, For, Show } from "solid-js";
-import { useStore } from "@nanostores/solid";
+import { useStore } from "../lib/useStore";
 import type { CodingFont } from "../lib/codingFonts";
 import { getFontDisplayName, getFontStyle } from "../lib/fontFeatures";
 import { TournamentEliminationMode } from "../lib/game";
@@ -174,7 +174,7 @@ function StartButton() {
 
 function FontList(props: { fonts: CodingFont[]; query: Accessor<string> }) {
   const families = useStore($tournamentFamilies);
-  const selectedFamilySet = () => new Set(families() ?? []);
+  const selectedFamilySet = () => new Set(families());
   const filtered = () => {
     const query = props.query().trim().toLowerCase();
     return props.fonts.filter((font) =>
@@ -185,7 +185,7 @@ function FontList(props: { fonts: CodingFont[]; query: Accessor<string> }) {
   };
 
   function toggle(family: string) {
-    const list = $tournamentFamilies.get() ?? [];
+    const list = $tournamentFamilies.get();
     $tournamentFamilies.set(
       list.includes(family)
         ? list.filter((value) => value !== family)

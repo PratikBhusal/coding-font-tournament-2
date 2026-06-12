@@ -33,6 +33,88 @@ test.describe("tournament (/)", () => {
     await expect(sidebar).not.toHaveCSS("width", "0px");
   });
 
+  test("curated/all presets keep the selection count correct", async ({
+    page,
+  }, testInfo) => {
+    await page.goto("./");
+    await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
+
+    // Mobile: the sidebar is collapsed (width 0) by default, so open it before
+    // interacting with the pool controls.
+    if (testInfo.project.name !== "desktop") {
+      await page.locator("#app-menu-toggle").click();
+      await expect(page.getByTestId("tournament-sidebar")).not.toHaveCSS(
+        "width",
+        "0px",
+      );
+    }
+
+    const badge = page
+      .getByTestId("tournament-sidebar")
+      .locator("text=/^\\d+\\/\\d+$/")
+      .first();
+
+    // Regression: reconcile() in @nanostores/solid's useStore collapsed the count
+    // to 1 after All -> Curated because the font objects have no `id` key. We now
+    // hand back the raw nanostore value (see src/lib/useStore.ts).
+    await expect(badge).toHaveText("12/38");
+
+    await page.getByRole("button", { name: "All", exact: true }).click();
+    await expect(badge).toHaveText("38/38");
+
+    await page.getByRole("button", { name: "Curated", exact: true }).click();
+    await expect(badge).toHaveText("12/38");
+
+    // Idempotent: clicking Curated again stays at 12.
+    await page.getByRole("button", { name: "Curated", exact: true }).click();
+    await expect(badge).toHaveText("12/38");
+
+    // Toggling a curated font off decrements the count and unchecks the box.
+    const firaBox = page
+      .getByTestId("tournament-sidebar")
+      .locator("label", { hasText: "Fira Code" })
+      .locator('input[type="checkbox"]');
+    await firaBox.click();
+    await expect(firaBox).not.toBeChecked();
+    await expect(badge).toHaveText("11/38");
+  });
+
+  test("SSR renders the curated selection (no 0/38 flash)", async ({
+    request,
+  }) => {
+    // The sidebar is client:load, so the server must emit the seeded selection.
+    // request.get() returns the unhydrated server HTML (no client JS runs); if the
+    // default seed regressed to a window-guarded effect this would render 0/38.
+    const html = await (await request.get("./")).text();
+    expect(html).toMatch(/Font Pool<\/span>.*?12<!--\/-->\/<!--\$-->38/s);
+  });
+
+  test("a stored selection overrides the default on reload", async ({
+    page,
+  }) => {
+    // Contract: the curated default is only the *initial* value; any persisted value
+    // (including an empty array from Clear) wins on the client.
+    await page.goto("./");
+    await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
+
+    // Two fonts: the board needs >= 2 to start (the curated default would otherwise
+    // mask whether the stored value was honored).
+    await page.evaluate(() =>
+      localStorage.setItem(
+        "tournamentFontFamilies",
+        JSON.stringify(["Fira Code", "Hack"]),
+      ),
+    );
+    await page.reload();
+    await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
+
+    const badge = page
+      .getByTestId("tournament-sidebar")
+      .locator("text=/^\\d+\\/\\d+$/")
+      .first();
+    await expect(badge).toHaveText("2/38");
+  });
+
   test("hides the SVG button until there is a winner", async ({ page }) => {
     await page.goto("./");
     // Board is mid-tournament on load, so no champion yet.
