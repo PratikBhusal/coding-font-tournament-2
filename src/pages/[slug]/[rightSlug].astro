@@ -74,7 +74,7 @@ const compareName = getFontDisplayName(compareFont);
         />
       </div>
       <div class="flex min-h-0 flex-col gap-4">
-        <FontHeader font={compareFont} maximizeHref={singleHref} />
+        <FontHeader font={compareFont} maximizeHref={getFontPath(compareFont.family)} />
         <CodeSpecimen
           font={compareFont}
           class="min-h-0 overflow-hidden rounded-lg border border-slate-300 dark:border-slate-700"
