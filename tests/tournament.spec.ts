@@ -153,6 +153,43 @@ test.describe("tournament (/)", () => {
     expect(Math.abs(newRunBox!.y - downloadBox!.y)).toBeLessThan(4);
   });
 
+  test("Show Name toggle survives a completed tournament and New Run", async ({
+    page,
+  }) => {
+    // Regression: completing a tournament force-set Show Name on, and mount reset it
+    // off, so the toggle no longer matched the user's choice after a New Run. It is
+    // now purely user-controlled and must persist across the win.
+    await page.goto("./");
+    await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
+
+    const showName = page
+      .locator("label", { hasText: "Show Name" })
+      .locator('input[type="checkbox"]');
+
+    // Turn the toggle on, then play to a champion.
+    await showName.check();
+    await expect(showName).toBeChecked();
+
+    const winner = page.getByText("Winner", { exact: true });
+    for (let i = 0; i < 80 && !(await winner.isVisible()); i++) {
+      await page.keyboard.press("ArrowLeft");
+    }
+    await expect(winner).toBeVisible();
+
+    // Start a fresh tournament; the toggle reappears still on.
+    await page.getByRole("button", { name: "New Run" }).click();
+    await expect(showName).toBeChecked();
+
+    // And the off state likewise survives: clear it, win again, New Run keeps it off.
+    await showName.uncheck();
+    for (let i = 0; i < 80 && !(await winner.isVisible()); i++) {
+      await page.keyboard.press("ArrowLeft");
+    }
+    await expect(winner).toBeVisible();
+    await page.getByRole("button", { name: "New Run" }).click();
+    await expect(showName).not.toBeChecked();
+  });
+
   test("SVG export embeds theme colors resolved from CSS variables", async ({
     page,
   }) => {

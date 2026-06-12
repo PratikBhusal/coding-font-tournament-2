@@ -444,7 +444,6 @@ function createTournamentBoard(): TournamentBoardController {
       };
       setCurrentBracket(result.currentBracket);
       $savedTournamentResult.set(result);
-      $showName.set(true);
       createConfetti("big");
     } else if (origin) {
       const rect = origin.getBoundingClientRect();
@@ -481,7 +480,6 @@ function createTournamentBoard(): TournamentBoardController {
     setGame(saved.game);
     setCurrentBracket(saved.currentBracket);
     setTotalPlayableMatches(saved.totalPlayableMatches);
-    $showName.set(true);
     return true;
   }
 
@@ -509,7 +507,6 @@ function runBoardLifecycle(
   board: TournamentBoardController,
   getButtons: () => { left?: HTMLButtonElement; right?: HTMLButtonElement },
 ) {
-  $showName.set(false);
   if (!board.restoreSaved()) board.startGame();
 
   const handleKeydown = (event: KeyboardEvent) => {
