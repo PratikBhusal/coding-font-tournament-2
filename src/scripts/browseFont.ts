@@ -5,6 +5,12 @@ const FONT_KEY = "fontFamily";
 
 let bound = false;
 
+// Slugs of the currently shown fonts, so Compare buttons can be hidden for both.
+// `comparedSlug` is "" when not comparing.
+let selectedSlug = "";
+let selectedPath = "";
+let comparedSlug = "";
+
 function setLink(id: string, href: string | undefined, hide: boolean) {
   const el = document.getElementById(id) as HTMLAnchorElement | null;
   if (!el) return;
@@ -42,17 +48,18 @@ function paintView(prefix: string, d: DOMStringMap, maximizeHref: string) {
 }
 
 /**
- * Point every Compare link at "<selectedPath>/<rowSlug>", hiding the selected
- * font's own. `selectedPath` is the base-prefixed font path (e.g. /base/Left);
- * `cmp`/`selectedSlug` are bare slugs used only for identity + the trailing
- * segment, so no base handling is needed here.
+ * Point every Compare link at "<selectedPath>/<rowSlug>", hiding the button for any
+ * font already on screen — the selected (left) font, and the compared (right) font
+ * while comparing — since comparing a shown font with itself makes no sense.
+ * `selectedPath` is the base-prefixed font path (e.g. /base/Left); the slugs are bare
+ * (used for identity + the trailing segment), so no base handling is needed here.
  */
-function refreshCompareLinks(selectedPath: string, selectedSlug: string) {
+function updateCompareLinks() {
   for (const link of document.querySelectorAll<HTMLAnchorElement>(
     "a.compare-link",
   )) {
     const cmp = link.dataset.compareSlug ?? "";
-    link.hidden = cmp === selectedSlug;
+    link.hidden = cmp === selectedSlug || (comparedSlug !== "" && cmp === comparedSlug);
     link.href = `${selectedPath}/${cmp}`;
   }
 }
@@ -68,21 +75,19 @@ function highlightRow(active: HTMLElement) {
 /** Apply a row's font to the primary (left) view and exit any active comparison. */
 function applyFont(row: HTMLElement) {
   const d = row.dataset;
-  paintView("browse", d, d.path ?? "");
-  closeCompare();
-  refreshCompareLinks(d.path ?? "", d.slug ?? "");
+  selectedSlug = d.slug ?? "";
+  selectedPath = d.path ?? "";
+  paintView("browse", d, selectedPath);
+  closeCompare(); // clears comparedSlug and refreshes the Compare buttons
   highlightRow(row);
 }
 
 /** Show the right-hand view comparing `row`'s font against the current selection. */
 function openCompare(row: HTMLElement) {
-  const selectedPath =
-    document.getElementById("browse-maximize")?.getAttribute("href") ?? "";
-  paintView(
-    "browse-compare",
-    row.dataset,
-    `${selectedPath}/${row.dataset.slug ?? ""}`,
-  );
+  comparedSlug = row.dataset.slug ?? "";
+  paintView("browse-compare", row.dataset, `${selectedPath}/${comparedSlug}`);
+  // Both shown fonts now hide their Compare button.
+  updateCompareLinks();
 
   const compare = document.getElementById("browse-compare");
   const board = document.getElementById("browse-board");
@@ -94,6 +99,10 @@ function openCompare(row: HTMLElement) {
 }
 
 function closeCompare() {
+  comparedSlug = "";
+  // Restore the (formerly compared) font's Compare button; only the left stays hidden.
+  updateCompareLinks();
+
   const compare = document.getElementById("browse-compare");
   const board = document.getElementById("browse-board");
   const leftClose = document.getElementById("browse-close");

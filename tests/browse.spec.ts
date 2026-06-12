@@ -99,6 +99,69 @@ test.describe("browse (/browse)", () => {
     await expect(compare).toBeHidden();
   });
 
+  test("comparing hides both shown fonts' Compare buttons and shows both close buttons", async ({
+    page,
+  }) => {
+    await page.goto("browse");
+    const firaCompare = page.locator(
+      'tr[data-family="Fira Code"] a.compare-link',
+    );
+    const jetbrainsCompare = page.locator(
+      'tr[data-family="JetBrains Mono"] a.compare-link',
+    );
+
+    await page.locator('tr[data-family="Fira Code"] td').first().click();
+    // Selected font hides its own Compare button; the other stays visible.
+    await expect(firaCompare).toBeHidden();
+    await expect(jetbrainsCompare).toBeVisible();
+    await expect(page.locator("#browse-close")).toBeHidden();
+
+    await jetbrainsCompare.click();
+    // While comparing: both shown fonts' Compare buttons hidden, both closes shown.
+    await expect(firaCompare).toBeHidden();
+    await expect(jetbrainsCompare).toBeHidden();
+    await expect(page.locator("#browse-close")).toBeVisible();
+    await expect(page.locator("#browse-compare-close")).toBeVisible();
+  });
+
+  test("left close keeps only the compared (right) font", async ({ page }) => {
+    await page.goto("browse");
+    await page.locator('tr[data-family="Fira Code"] td').first().click();
+    await page
+      .locator('tr[data-family="JetBrains Mono"] a.compare-link')
+      .click();
+
+    await page.locator("#browse-close").click();
+    await expect(page.locator("#browse-compare")).toBeHidden();
+    // The right font becomes the sole view; its Compare button stays hidden, the
+    // former left font's returns.
+    await expect(page.locator("#browse-name")).toHaveText("JetBrains Mono");
+    await expect(
+      page.locator('tr[data-family="JetBrains Mono"] a.compare-link'),
+    ).toBeHidden();
+    await expect(
+      page.locator('tr[data-family="Fira Code"] a.compare-link'),
+    ).toBeVisible();
+  });
+
+  test("right close keeps only the original (left) font", async ({ page }) => {
+    await page.goto("browse");
+    await page.locator('tr[data-family="Fira Code"] td').first().click();
+    await page
+      .locator('tr[data-family="JetBrains Mono"] a.compare-link')
+      .click();
+
+    await page.locator("#browse-compare-close").click();
+    await expect(page.locator("#browse-compare")).toBeHidden();
+    await expect(page.locator("#browse-name")).toHaveText("Fira Code");
+    await expect(
+      page.locator('tr[data-family="Fira Code"] a.compare-link'),
+    ).toBeHidden();
+    await expect(
+      page.locator('tr[data-family="JetBrains Mono"] a.compare-link'),
+    ).toBeVisible();
+  });
+
   test("gear toggles the sidebar (open by default on every viewport)", async ({
     page,
   }) => {
