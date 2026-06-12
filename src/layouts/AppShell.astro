@@ -24,7 +24,7 @@ const { sidebarDefaultOpen = false, sidebarTestId } = Astro.props;
     >
       <div
         id="app-sidebar-scroll"
-        class="absolute inset-0 flex flex-col gap-4 overflow-auto border-r border-slate-300 bg-slate-100 p-4 pr-5 [scrollbar-width:thin] dark:border-slate-700 dark:bg-slate-900"
+        class="absolute inset-0 flex [scrollbar-width:thin] flex-col gap-4 overflow-auto border-r border-slate-300 bg-slate-100 p-4 pr-5 dark:border-slate-700 dark:bg-slate-900"
       >
         <slot name="sidebar" />
         <button

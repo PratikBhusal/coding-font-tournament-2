@@ -8,8 +8,12 @@ type Props = {
   activeClass?: string;
 };
 
-const { href, active = false, class: className = "", activeClass = "" } =
-  Astro.props;
+const {
+  href,
+  active = false,
+  class: className = "",
+  activeClass = "",
+} = Astro.props;
 ---
 
 <a href={href} class={`${className} ${active ? activeClass : ""}`.trim()}>

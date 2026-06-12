@@ -59,7 +59,8 @@ function updateCompareLinks() {
     "a.compare-link",
   )) {
     const cmp = link.dataset.compareSlug ?? "";
-    link.hidden = cmp === selectedSlug || (comparedSlug !== "" && cmp === comparedSlug);
+    link.hidden =
+      cmp === selectedSlug || (comparedSlug !== "" && cmp === comparedSlug);
     link.href = `${selectedPath}/${cmp}`;
   }
 }
@@ -145,8 +146,8 @@ export function initBrowseFont() {
       // Left view's close removes the left font: promote the compared (right) font to
       // the sole view.
       if (target.closest("#browse-close")) {
-        const rightFamily =
-          document.getElementById("browse-compare-name")?.dataset.family;
+        const rightFamily = document.getElementById("browse-compare-name")
+          ?.dataset.family;
         if (rightFamily) {
           selectFamily(rightFamily);
           writeJSON(FONT_KEY, rightFamily);
