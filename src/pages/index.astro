@@ -18,10 +18,11 @@ const highlighted = await highlightAllSamples();
   <AppShell sidebarTestId="tournament-sidebar">
     <Header slot="header" path="/" />
     <Controls slot="controls" />
-    <TournamentSidebar slot="sidebar" fonts={codingFonts} client:load />
+    <TournamentSidebar slot="sidebar" fonts={codingFonts} client:idle />
     <canvas
       id="canvas"
       class="pointer-events-none fixed inset-0 z-50 h-full w-full"></canvas>
-    <TournamentBoard highlighted={highlighted} client:only="solid-js" />
+    <!-- <TournamentBoard highlighted={highlighted} client:only="solid-js" /> -->
+    <TournamentBoard highlighted={highlighted} client:idle />
   </AppShell>
 </BaseLayout>

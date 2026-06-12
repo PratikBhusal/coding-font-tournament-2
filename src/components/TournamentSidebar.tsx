@@ -18,7 +18,7 @@ type TournamentSidebarProps = {
 const fieldClass =
   "min-h-9 rounded-md border border-slate-300 bg-white px-3 dark:border-slate-700 dark:bg-slate-950";
 const buttonClass =
-  "min-h-9 flex-1 cursor-pointer rounded-md border border-slate-300 px-3 py-2 hover:bg-slate-200 dark:border-slate-700 dark:hover:bg-slate-800";
+  "inline-flex min-h-9 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md border border-slate-300 px-3 py-2 transition hover:bg-slate-200 active:scale-95 active:bg-slate-300 dark:border-slate-700 dark:hover:bg-slate-800 dark:active:bg-slate-700";
 const labelClass =
   "text-sm font-bold uppercase tracking-wide text-slate-600 dark:text-slate-400";
 
@@ -62,18 +62,21 @@ function PoolPresets(props: { fonts: CodingFont[] }) {
           $tournamentFamilies.set(props.fonts.map((font) => font.family))
         }
       >
+        <span class="icon-[lucide--list-checks] h-4 w-4 shrink-0" />
         All
       </button>
       <button
         class={`${buttonClass} @max-xs:basis-[calc(50%-0.25rem)]`}
         onClick={() => $tournamentFamilies.set(curated())}
       >
+        <span class="icon-[lucide--astroid] h-4 w-4 shrink-0" />
         Curated
       </button>
       <button
         class={`${buttonClass} @max-xs:basis-full`}
         onClick={() => $tournamentFamilies.set([])}
       >
+        <span class="icon-[lucide--brush-cleaning] h-4 w-4 shrink-0" />
         Clear
       </button>
     </div>
@@ -163,10 +166,11 @@ function StartButton() {
   }
   return (
     <button
-      class="inline-flex min-h-10 cursor-pointer items-center justify-center rounded-md bg-blue-600 px-4 font-semibold text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+      class="inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-blue-600 px-4 font-semibold text-white transition hover:bg-blue-500 active:scale-95 active:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
       disabled={!canStart()}
       onClick={startTournament}
     >
+      <span class="icon-[lucide--swords] h-4 w-4 shrink-0" />
       Start Tournament
     </button>
   );

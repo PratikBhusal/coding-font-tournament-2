@@ -47,7 +47,8 @@ type TournamentBoardProps = {
 
 type ProgressMatch = Pick<TournamentMatch, "players" | "winner">;
 
-type ChooseWinner = (font: CodingFont, card?: HTMLDivElement) => void;
+// `origin` is the element confetti bursts from (the card's Choose button).
+type ChooseWinner = (font: CodingFont, origin?: HTMLElement) => void;
 
 interface TournamentBoardController {
   progressLabel: Accessor<string>;
@@ -162,10 +163,14 @@ function PlayerCard(props: {
   player: Accessor<CodingFont | undefined>;
   highlighted: Highlighted;
   onChoose: ChooseWinner;
-  ref?: (element: HTMLDivElement) => void;
+  side: "left" | "right";
+  // Receives the Choose button so the board can originate confetti there (and the
+  // keyboard handler can reuse it). See chooseWinner.
+  ref?: (element: HTMLButtonElement) => void;
 }) {
   const showName = useStore($showName);
-  let card: HTMLDivElement | undefined;
+  let chooseButton: HTMLButtonElement | undefined;
+  const arrow = () => (props.side === "left" ? "←" : "→");
 
   return (
     <div class="flex min-h-0 flex-col gap-4">
@@ -181,18 +186,14 @@ function PlayerCard(props: {
               </div>
             </Show>
             <div
-              ref={(element) => {
-                card = element;
-                props.ref?.(element);
-              }}
               role="button"
               tabIndex={0}
-              class="flex max-h-full min-h-0 cursor-pointer flex-col overflow-hidden rounded-lg border-2 border-slate-300 bg-white p-2 text-left hover:border-blue-500 focus-visible:border-blue-500 focus-visible:outline-none dark:border-slate-700 dark:bg-slate-950"
-              onClick={() => props.onChoose(font(), card)}
+              class="relative flex max-h-full min-h-0 cursor-pointer flex-col overflow-hidden rounded-lg border-2 border-slate-300 bg-white p-2 text-left hover:border-blue-500 focus-visible:border-blue-500 focus-visible:outline-none dark:border-slate-700 dark:bg-slate-950"
+              onClick={() => props.onChoose(font(), chooseButton)}
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
-                  props.onChoose(font(), card);
+                  props.onChoose(font(), chooseButton);
                 }
               }}
             >
@@ -201,6 +202,27 @@ function PlayerCard(props: {
                 highlighted={props.highlighted}
                 class="overflow-hidden rounded-md"
               />
+              {/* Visible affordance mirroring the ←/→ keyboard shortcut. The card
+                  itself is the click target, so stop propagation to avoid choosing
+                  twice. tabIndex -1: the card already takes focus / Enter / Space. */}
+              <button
+                ref={(element) => {
+                  chooseButton = element;
+                  props.ref?.(element);
+                }}
+                type="button"
+                tabIndex={-1}
+                class="absolute bottom-6 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-semibold text-white shadow-lg transition hover:bg-blue-500 active:scale-95 active:bg-blue-700 active:shadow-md"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  props.onChoose(font(), chooseButton);
+                }}
+              >
+                Choose or press
+                <kbd class="rounded border border-slate-700 bg-slate-900 px-1.5 py-0.5 text-xs text-white">
+                  {arrow()}
+                </kbd>
+              </button>
             </div>
           </>
         )}
@@ -305,7 +327,7 @@ function createTournamentBoard(): TournamentBoardController {
     if (closeSidebar) window.dispatchEvent(new CustomEvent("app:menu-close"));
   }
 
-  const chooseWinner: ChooseWinner = (font, card) => {
+  const chooseWinner: ChooseWinner = (font, origin) => {
     const activeGame = game();
     if (!activeGame) return;
     setCurrentBracket(activeGame.setWinner(font));
@@ -323,8 +345,8 @@ function createTournamentBoard(): TournamentBoardController {
       $savedTournamentResult.set(result);
       $showName.set(true);
       createConfetti("big");
-    } else if (card) {
-      const rect = card.getBoundingClientRect();
+    } else if (origin) {
+      const rect = origin.getBoundingClientRect();
       createConfetti("small", {
         x: (rect.left + rect.width / 2) / window.innerWidth,
         y: (rect.top + rect.height / 2) / window.innerHeight,
@@ -378,12 +400,13 @@ function createTournamentBoard(): TournamentBoardController {
 /**
  * The board's mount-time behavior: reset, resume-or-start, and the window listeners
  * (←/→ to pick a winner, the sidebar's start event). Called from within onMount, so
- * its onCleanup binds to that owner. `getCards` reads the live card refs so the
- * keyboard handler always sees the current elements.
+ * its onCleanup binds to that owner. `getButtons` reads the live Choose-button refs
+ * so the keyboard handler always sees the current elements (and confetti originates
+ * at the button, matching a mouse click).
  */
 function runBoardLifecycle(
   board: TournamentBoardController,
-  getCards: () => { left?: HTMLDivElement; right?: HTMLDivElement },
+  getButtons: () => { left?: HTMLButtonElement; right?: HTMLButtonElement },
 ) {
   $showName.set(false);
   if (!board.restoreSaved()) board.startGame();
@@ -391,7 +414,7 @@ function runBoardLifecycle(
   const handleKeydown = (event: KeyboardEvent) => {
     const players = board.currentPlayers();
     if (players.length < 2) return;
-    const { left, right } = getCards();
+    const { left, right } = getButtons();
     if (event.key === "ArrowLeft") board.chooseWinner(players[0], left);
     if (event.key === "ArrowRight") board.chooseWinner(players[1], right);
   };
@@ -406,12 +429,12 @@ function runBoardLifecycle(
 }
 
 export default function TournamentBoard(props: TournamentBoardProps) {
-  let leftCard: HTMLDivElement | undefined;
-  let rightCard: HTMLDivElement | undefined;
+  let leftButton: HTMLButtonElement | undefined;
+  let rightButton: HTMLButtonElement | undefined;
 
   const board = createTournamentBoard();
   onMount(() =>
-    runBoardLifecycle(board, () => ({ left: leftCard, right: rightCard })),
+    runBoardLifecycle(board, () => ({ left: leftButton, right: rightButton })),
   );
 
   return (
@@ -435,13 +458,15 @@ export default function TournamentBoard(props: TournamentBoardProps) {
                 player={board.leftPlayer}
                 highlighted={props.highlighted}
                 onChoose={board.chooseWinner}
-                ref={(element) => (leftCard = element)}
+                side="left"
+                ref={(element) => (leftButton = element)}
               />
               <PlayerCard
                 player={board.rightPlayer}
                 highlighted={props.highlighted}
                 onChoose={board.chooseWinner}
-                ref={(element) => (rightCard = element)}
+                side="right"
+                ref={(element) => (rightButton = element)}
               />
             </>
           }

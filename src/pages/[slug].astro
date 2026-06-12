@@ -63,36 +63,24 @@ const fontName = getFontDisplayName(font);
       {font.variants.includes("italic") && <Specimen font={font} italic />}
       {
         !font.isSystemFont && (
-          <div class="overflow-hidden rounded-lg border border-slate-300 dark:border-slate-700">
-            <table class="w-full text-left text-sm">
-              <tbody>
-                <tr class="border-b border-slate-300 dark:border-slate-700">
-                  <th class="p-2">Download URL</th>
-                  <td class="p-2 align-middle">
-                    <a
-                      href={font.downloadUrl}
-                      class="inline-flex max-w-64 items-center gap-2 truncate rounded-md border border-slate-300 px-2 py-1 dark:border-slate-700"
-                    >
-                      <span class="icon-[lucide--download] h-4 w-4" />
-                      {font.downloadUrl}
-                    </a>
-                  </td>
-                </tr>
-                <tr>
-                  <th class="p-2">Website URL</th>
-                  <td class="p-2 align-middle">
-                    <a
-                      href={font.siteUrl}
-                      target="_blank"
-                      class="inline-flex max-w-64 items-center gap-2 truncate rounded-md border border-slate-300 px-2 py-1 dark:border-slate-700"
-                    >
-                      <span class="icon-[lucide--external-link] h-4 w-4" />
-                      {font.siteUrl}
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="@container flex flex-wrap gap-2 text-sm">
+            <a
+              href={font.downloadUrl}
+              title={font.downloadUrl}
+              class="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-md border border-slate-300 px-3 py-2 transition hover:bg-slate-200 active:scale-95 active:bg-slate-300 @max-xs:basis-full dark:border-slate-700 dark:hover:bg-slate-800 dark:active:bg-slate-700"
+            >
+              <span class="icon-[lucide--download] h-4 w-4 shrink-0" />
+              <span class="truncate">Download Font</span>
+            </a>
+            <a
+              href={font.siteUrl}
+              target="_blank"
+              title={font.siteUrl}
+              class="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-md border border-slate-300 px-3 py-2 transition hover:bg-slate-200 active:scale-95 active:bg-slate-300 @max-xs:basis-full dark:border-slate-700 dark:hover:bg-slate-800 dark:active:bg-slate-700"
+            >
+              <span class="icon-[lucide--external-link] h-4 w-4 shrink-0" />
+              <span class="truncate">Website URL</span>
+            </a>
           </div>
         )
       }
