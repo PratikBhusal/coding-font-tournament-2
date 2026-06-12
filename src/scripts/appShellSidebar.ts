@@ -7,8 +7,11 @@ let dragCurrent = 0;
 
 // Relative default (~1/3 of the viewport ≈ 480px at 1440px wide), floored at 192px.
 const defaultSidebarWidth = () => Math.round((window.innerWidth || 1024) / 3);
+// Cap at 99% of the viewport so the sidebar can never take the full width (leaving
+// room for the main content).
+const maxSidebarWidth = () => Math.round((window.innerWidth || 1024) * 0.99);
 const clampWidth = (width: number) =>
-  Math.min(Math.max(width, 192), window.innerWidth || width);
+  Math.min(Math.max(width, 192), maxSidebarWidth());
 
 const getAside = () => document.getElementById("app-sidebar");
 // `data-default-open` opens the sidebar on every viewport; otherwise it opens only
