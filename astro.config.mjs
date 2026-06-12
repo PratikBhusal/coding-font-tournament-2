@@ -12,6 +12,12 @@ export default defineConfig({
   site: "https://pratikbhusal.github.io",
   base: "/coding-font-tournament",
 
+  // The dev toolbar is a bottom-pinned dev-only overlay; it intercepts pointer
+  // events over UI anchored to the bottom of the viewport (e.g. the tournament's
+  // unified-view Choose buttons on short mobile screens). Disable it for the
+  // Playwright dev server (ASTRO_DEV_TOOLBAR=off) while keeping it for `pnpm dev`.
+  devToolbar: { enabled: process.env.ASTRO_DEV_TOOLBAR !== "off" },
+
   integrations: [solidJs(), sitemap()],
 
   vite: {

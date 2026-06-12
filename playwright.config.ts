@@ -41,5 +41,8 @@ export default defineConfig({
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // Disable Astro's dev toolbar so its bottom-pinned overlay can't intercept
+    // clicks on bottom-anchored UI (e.g. the unified-view Choose buttons).
+    env: { ASTRO_DEV_TOOLBAR: "off" },
   },
 });

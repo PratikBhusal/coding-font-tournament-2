@@ -16,7 +16,9 @@
   },
   "wireit": {
     "test": {
-      "dependencies": ["test:e2e"]
+      "dependencies": [
+        "test:e2e"
+      ]
     },
     "test:e2e": {
       "command": "playwright test"
@@ -38,9 +40,11 @@
     "@playwright/test": "^1.60.0",
     "@tailwindcss/vite": "^4.3.0",
     "@types/canvas-confetti": "^1.9.0",
+    "@types/hast": "^3.0.4",
     "@types/node": "^25.9.2",
     "astro": "^6.4.6",
     "astro-seo-meta": "^6.0.0",
+    "hast-util-to-html": "^9.0.5",
     "prettier": "^3.8.4",
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.8.0",

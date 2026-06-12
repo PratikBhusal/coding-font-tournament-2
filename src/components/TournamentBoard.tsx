@@ -26,6 +26,7 @@ import {
 import { getFontPath } from "../lib/routes";
 import { getFontSize } from "../lib/appearance";
 import { sampleLanguages, type SampleLanguage } from "../lib/sampleCode";
+import type { HighlightedLines } from "../lib/highlight";
 import {
   createTournamentSvg,
   createTournamentSvgFileName,
@@ -36,13 +37,16 @@ import {
   $savedTournamentResult,
   $selectedFonts,
   $showName,
+  $viewMode,
   TOURNAMENT_START_EVENT,
 } from "../lib/tournamentStore";
 
 type Highlighted = Record<SampleLanguage, string>;
+type HighlightedLinesMap = Record<SampleLanguage, HighlightedLines>;
 
 type TournamentBoardProps = {
   highlighted: Highlighted;
+  highlightedLines: HighlightedLinesMap;
 };
 
 type ProgressMatch = Pick<TournamentMatch, "players" | "winner">;
@@ -132,14 +136,111 @@ function Specimen(props: {
   );
 }
 
+/**
+ * One rendered row of the unified view: a neutral `A`/`B` gutter (which font the
+ * row uses) followed by the line's code in `font`. font-family/features sit on the
+ * row (`specimenStyle`); the gutter keeps its own font via CSS.
+ */
+function UnifiedLine(props: {
+  font: CodingFont;
+  lineHtml: string;
+  label: string;
+}) {
+  return (
+    <span class="line unified-line" style={specimenStyle(props.font)}>
+      <span class="unified-line-label" aria-hidden="true">
+        {props.label}
+      </span>
+      <span innerHTML={props.lineHtml} />
+    </span>
+  );
+}
+
+/**
+ * Unified view: one specimen per language where every source line is rendered
+ * twice in a row — once in `fontA`, once in `fontB` — for stacked comparison.
+ * Reuses the build-time per-line Shiki HTML (`HighlightedLines`) and rebuilds an
+ * equivalent `<pre class="shiki">` so the existing theme/feature CSS still
+ * applies. `specimenStyle` sets each line's font-family + `--feat-*` vars; the
+ * `.unified-line` rules in global.css pick the active feature set and stack the
+ * lines (display: block).
+ */
+function UnifiedSpecimen(props: {
+  fontA: CodingFont;
+  fontB: CodingFont;
+  highlightedLines: HighlightedLinesMap;
+  class?: string;
+}) {
+  return (
+    <div
+      class={`code-specimen flex max-h-full min-h-0 flex-col overflow-hidden ${props.class ?? ""}`}
+    >
+      <For each={sampleLanguages}>
+        {(language) => {
+          const data = props.highlightedLines[language.id];
+          return (
+            <div class="code-lang" data-lang={language.id}>
+              <pre class={data.preClass} style={data.preStyle}>
+                <code>
+                  <For each={data.lines}>
+                    {(lineHtml) => (
+                      <>
+                        <UnifiedLine
+                          font={props.fontA}
+                          lineHtml={lineHtml}
+                          label="A"
+                        />
+                        <UnifiedLine
+                          font={props.fontB}
+                          lineHtml={lineHtml}
+                          label="B"
+                        />
+                      </>
+                    )}
+                  </For>
+                </code>
+              </pre>
+            </div>
+          );
+        }}
+      </For>
+    </div>
+  );
+}
+
 function ControlsBar(props: {
   champion: Accessor<CodingFont | undefined>;
   progressLabel: Accessor<string>;
 }) {
   const showName = useStore($showName);
+  const viewMode = useStore($viewMode);
+  const segmentClass = (active: boolean) =>
+    `px-3 py-1 transition-transform active:scale-95 ${
+      active
+        ? "bg-blue-600 text-white"
+        : "bg-transparent text-slate-700 hover:bg-slate-200 dark:text-slate-200 dark:hover:bg-slate-800"
+    }`;
   return (
     <div class="flex items-center gap-4 border-b border-slate-300 px-4 py-2 text-sm dark:border-slate-700">
       <Show when={!props.champion()}>
+        <div class="inline-flex overflow-hidden rounded-md border border-slate-300 dark:border-slate-700">
+          <button
+            type="button"
+            aria-pressed={viewMode() === "split"}
+            class={segmentClass(viewMode() === "split")}
+            onClick={() => $viewMode.set("split")}
+          >
+            Split
+          </button>
+          <button
+            type="button"
+            aria-pressed={viewMode() === "unified"}
+            class={segmentClass(viewMode() === "unified")}
+            onClick={() => $viewMode.set("unified")}
+          >
+            Unified
+          </button>
+        </div>
         <label class="flex items-center gap-2">
           <input
             class="h-4 w-4 accent-blue-600"
@@ -433,6 +534,8 @@ export default function TournamentBoard(props: TournamentBoardProps) {
   let rightButton: HTMLButtonElement | undefined;
 
   const board = createTournamentBoard();
+  const viewMode = useStore($viewMode);
+  const showName = useStore($showName);
   onMount(() =>
     runBoardLifecycle(board, () => ({ left: leftButton, right: rightButton })),
   );
@@ -443,44 +546,92 @@ export default function TournamentBoard(props: TournamentBoardProps) {
         champion={board.champion}
         progressLabel={board.progressLabel}
       />
-      <div
-        class={`grid min-h-0 flex-1 grid-cols-1 gap-4 p-4 ${
-          board.champion()
-            ? "grid-rows-1 md:grid-cols-2"
-            : "grid-rows-2 md:grid-cols-2 md:grid-rows-1"
-        }`}
+      <Show
+        when={!board.champion() && viewMode() === "unified"}
+        fallback={
+          <div
+            class={`grid min-h-0 flex-1 grid-cols-1 gap-4 p-4 ${
+              board.champion()
+                ? "grid-rows-1 md:grid-cols-2"
+                : "grid-rows-2 md:grid-cols-2 md:grid-rows-1"
+            }`}
+          >
+            <Show
+              when={board.champion()}
+              fallback={
+                <>
+                  <PlayerCard
+                    player={board.leftPlayer}
+                    highlighted={props.highlighted}
+                    onChoose={board.chooseWinner}
+                    side="left"
+                    ref={(element) => (leftButton = element)}
+                  />
+                  <PlayerCard
+                    player={board.rightPlayer}
+                    highlighted={props.highlighted}
+                    onChoose={board.chooseWinner}
+                    side="right"
+                    ref={(element) => (rightButton = element)}
+                  />
+                </>
+              }
+            >
+              {(winner) => (
+                <WinnerView
+                  winner={winner()}
+                  highlighted={props.highlighted}
+                  onNewRun={() => board.startGame(false)}
+                  onDownload={board.downloadSvg}
+                />
+              )}
+            </Show>
+          </div>
+        }
       >
-        <Show
-          when={board.champion()}
-          fallback={
-            <>
-              <PlayerCard
-                player={board.leftPlayer}
-                highlighted={props.highlighted}
-                onChoose={board.chooseWinner}
-                side="left"
+        <Show when={board.leftPlayer() && board.rightPlayer()}>
+          <div class="flex min-h-0 flex-1 flex-col gap-4 p-4">
+            <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border-2 border-slate-300 bg-white p-2 dark:border-slate-700 dark:bg-slate-950">
+              <UnifiedSpecimen
+                fontA={board.leftPlayer()!}
+                fontB={board.rightPlayer()!}
+                highlightedLines={props.highlightedLines}
+                class="overflow-hidden rounded-md"
+              />
+            </div>
+            <div class="flex shrink-0 items-center justify-center gap-4">
+              <button
                 ref={(element) => (leftButton = element)}
-              />
-              <PlayerCard
-                player={board.rightPlayer}
-                highlighted={props.highlighted}
-                onChoose={board.chooseWinner}
-                side="right"
+                type="button"
+                class="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-semibold text-white shadow-lg transition-transform hover:bg-blue-500 active:scale-95 active:bg-blue-700 active:shadow-md"
+                onClick={(event) =>
+                  board.chooseWinner(board.leftPlayer()!, event.currentTarget)
+                }
+              >
+                <kbd class="rounded border border-slate-700 bg-slate-900 px-1.5 py-0.5 text-xs text-white">
+                  ←
+                </kbd>
+                Choose{" "}
+                {showName() ? getFontDisplayName(board.leftPlayer()!) : "A"}
+              </button>
+              <button
                 ref={(element) => (rightButton = element)}
-              />
-            </>
-          }
-        >
-          {(winner) => (
-            <WinnerView
-              winner={winner()}
-              highlighted={props.highlighted}
-              onNewRun={() => board.startGame(false)}
-              onDownload={board.downloadSvg}
-            />
-          )}
+                type="button"
+                class="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-semibold text-white shadow-lg transition-transform hover:bg-blue-500 active:scale-95 active:bg-blue-700 active:shadow-md"
+                onClick={(event) =>
+                  board.chooseWinner(board.rightPlayer()!, event.currentTarget)
+                }
+              >
+                Choose{" "}
+                {showName() ? getFontDisplayName(board.rightPlayer()!) : "B"}
+                <kbd class="rounded border border-slate-700 bg-slate-900 px-1.5 py-0.5 text-xs text-white">
+                  →
+                </kbd>
+              </button>
+            </div>
+          </div>
         </Show>
-      </div>
+      </Show>
     </div>
   );
 }

@@ -326,6 +326,45 @@ html[data-code-lang="python"] .code-specimen .code-lang[data-lang="python"] {
   font-feature-settings: inherit;
 }
 
+/* Unified view: each source line is rendered twice (one per font) as a block so
+   the copies stack. font-family is set inline per line; the feature-settings are
+   picked from that line's own --feat-* vars (mirroring the .code-specimen rules
+   above) so the Ligatures/OpenType toggles still apply per font. */
+.code-specimen .shiki .unified-line {
+  display: block;
+  font-feature-settings: var(--feat-both, normal);
+}
+html[data-ligatures="0"][data-opentype="1"]
+  .code-specimen
+  .shiki
+  .unified-line {
+  font-feature-settings: var(--feat-ot, normal);
+}
+html[data-ligatures="1"][data-opentype="0"]
+  .code-specimen
+  .shiki
+  .unified-line {
+  font-feature-settings: var(--feat-lig, normal);
+}
+html[data-ligatures="0"][data-opentype="0"]
+  .code-specimen
+  .shiki
+  .unified-line {
+  font-feature-settings: normal;
+}
+/* A/B gutter: a fixed, neutral font (independent of the fonts being compared) so
+   the label stays constant across rows. */
+.code-specimen .shiki .unified-line-label {
+  display: inline-block;
+  width: 1ch;
+  margin-right: 1.5ch;
+  text-align: right;
+  font-family: ui-monospace, monospace;
+  font-feature-settings: normal;
+  color: rgb(127 127 127 / 0.8);
+  user-select: none;
+}
+
 /* Theme switch via Shiki multi-theme CSS vars (no-JS default: vs-dark) */
 .code-specimen .shiki {
   background-color: var(--shiki-vs-dark-bg);

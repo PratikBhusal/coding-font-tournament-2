@@ -6,9 +6,10 @@ import Controls from "../components/Controls.astro";
 import TournamentSidebar from "../components/TournamentSidebar";
 import TournamentBoard from "../components/TournamentBoard";
 import codingFonts from "../lib/codingFonts";
-import { highlightAllSamples } from "../lib/highlight";
+import { highlightAllSamples, highlightAllSampleLines } from "../lib/highlight";
 
 const highlighted = await highlightAllSamples();
+const highlightedLines = await highlightAllSampleLines();
 ---
 
 <BaseLayout
@@ -23,6 +24,10 @@ const highlighted = await highlightAllSamples();
       id="canvas"
       class="pointer-events-none fixed inset-0 z-50 h-full w-full"></canvas>
     <!-- <TournamentBoard highlighted={highlighted} client:only="solid-js" /> -->
-    <TournamentBoard highlighted={highlighted} client:idle />
+    <TournamentBoard
+      highlighted={highlighted}
+      highlightedLines={highlightedLines}
+      client:idle
+    />
   </AppShell>
 </BaseLayout>
