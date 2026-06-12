@@ -101,16 +101,19 @@ const selectAttrs = (font: CodingFont) =>
                   icon="icon-[lucide--columns-2]"
                   label="Compare"
                 />
-              ) : compareHref(font) ? (
-                <IconButton
-                  href={compareHref(font)}
-                  class="min-h-8 gap-2 rounded-md border border-slate-300 px-2 text-sm transition-transform active:scale-95 active:bg-slate-200 dark:border-slate-700 dark:active:bg-slate-700"
-                  iconClass="h-4 w-4"
-                  icon="icon-[lucide--columns-2]"
-                  label="Compare"
-                />
               ) : (
-                <span class="text-xs text-slate-400">—</span>
+                // Hide on the base font's own row (no self-compare) and on the
+                // currently-active row, whose Compare link would point to this page.
+                compareHref(font) &&
+                font.family !== activeFamily && (
+                  <IconButton
+                    href={compareHref(font)}
+                    class="min-h-8 gap-2 rounded-md border border-slate-300 px-2 text-sm transition-transform active:scale-95 active:bg-slate-200 dark:border-slate-700 dark:active:bg-slate-700"
+                    iconClass="h-4 w-4"
+                    icon="icon-[lucide--columns-2]"
+                    label="Compare"
+                  />
+                )
               )}
             </td>
             <td class="px-3 py-2 align-middle">
