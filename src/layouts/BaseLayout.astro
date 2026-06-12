@@ -63,7 +63,7 @@ const {
           }
         };
 
-        const applyColorScheme = () => {
+        const applyColorScheme = (root) => {
           let dark = false;
           try {
             const stored = window.localStorage.getItem("colorScheme");
@@ -73,12 +73,11 @@ const {
           } catch {
             dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
           }
-          document.documentElement.classList.toggle("dark", dark);
+          root.classList.toggle("dark", dark);
         };
 
         const themes = ["vs-dark", "vs", "hc-black", "hc-light"];
-        const applyAppearance = () => {
-          const root = document.documentElement;
+        const applyAppearance = (root) => {
           const theme = read("selectedTheme", "vs-dark");
           root.dataset.codeTheme = themes.includes(theme) ? theme : "vs-dark";
           root.dataset.codeLang = read("editorLanguage", "typescript");
@@ -92,14 +91,25 @@ const {
             : "0";
         };
 
-        const apply = () => {
-          applyColorScheme();
-          applyAppearance();
+        const apply = (root) => {
+          applyColorScheme(root);
+          applyAppearance(root);
         };
 
-        apply();
-        document.addEventListener("astro:after-swap", apply);
-        document.addEventListener("astro:page-load", apply);
+        apply(document.documentElement);
+        // Apply to the INCOMING document before the ClientRouter swap so the .dark
+        // class and code-appearance attrs are already on the new <html>. Otherwise the
+        // swap briefly drops them and elements with `dark:` overrides (e.g. the white
+        // bg-white toggle/Compare buttons) flash light for a frame in dark mode.
+        document.addEventListener("astro:before-swap", (event) =>
+          apply(event.newDocument.documentElement),
+        );
+        document.addEventListener("astro:after-swap", () =>
+          apply(document.documentElement),
+        );
+        document.addEventListener("astro:page-load", () =>
+          apply(document.documentElement),
+        );
       })();
     </script>
     <ClientRouter fallback="swap" />

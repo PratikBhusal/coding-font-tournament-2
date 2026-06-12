@@ -18,7 +18,7 @@ type TournamentSidebarProps = {
 const fieldClass =
   "min-h-9 rounded-md border border-slate-300 bg-white px-3 dark:border-slate-700 dark:bg-slate-950";
 const buttonClass =
-  "inline-flex min-h-9 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md border border-slate-300 px-3 py-2 transition hover:bg-slate-200 active:scale-95 active:bg-slate-300 dark:border-slate-700 dark:hover:bg-slate-800 dark:active:bg-slate-700";
+  "inline-flex min-h-9 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md border border-slate-300 px-3 py-2 transition-transform hover:bg-slate-200 active:scale-95 active:bg-slate-300 dark:border-slate-700 dark:hover:bg-slate-800 dark:active:bg-slate-700";
 const labelClass =
   "text-sm font-bold uppercase tracking-wide text-slate-600 dark:text-slate-400";
 
@@ -166,7 +166,7 @@ function StartButton() {
   }
   return (
     <button
-      class="inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-blue-600 px-4 font-semibold text-white transition hover:bg-blue-500 active:scale-95 active:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+      class="inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-blue-600 px-4 font-semibold text-white transition-transform hover:bg-blue-500 active:scale-95 active:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
       disabled={!canStart()}
       onClick={startTournament}
     >

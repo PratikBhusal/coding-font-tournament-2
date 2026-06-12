@@ -212,7 +212,7 @@ function PlayerCard(props: {
                 }}
                 type="button"
                 tabIndex={-1}
-                class="absolute bottom-6 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-semibold text-white shadow-lg transition hover:bg-blue-500 active:scale-95 active:bg-blue-700 active:shadow-md"
+                class="absolute bottom-6 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-semibold text-white shadow-lg transition-transform hover:bg-blue-500 active:scale-95 active:bg-blue-700 active:shadow-md"
                 onClick={(event) => {
                   event.stopPropagation();
                   props.onChoose(font(), chooseButton);

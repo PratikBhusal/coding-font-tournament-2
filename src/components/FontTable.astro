@@ -96,7 +96,7 @@ const selectAttrs = (font: CodingFont) =>
               {selectable ? (
                 <IconButton
                   data-compare-slug={getFontSlug(font.family)}
-                  class="compare-link min-h-8 gap-2 rounded-md border border-slate-300 px-2 text-sm transition active:scale-95 active:bg-slate-200 dark:border-slate-700 dark:active:bg-slate-700"
+                  class="compare-link min-h-8 gap-2 rounded-md border border-slate-300 px-2 text-sm transition-transform active:scale-95 active:bg-slate-200 dark:border-slate-700 dark:active:bg-slate-700"
                   iconClass="h-4 w-4"
                   icon="icon-[lucide--columns-2]"
                   label="Compare"
@@ -104,7 +104,7 @@ const selectAttrs = (font: CodingFont) =>
               ) : compareHref(font) ? (
                 <IconButton
                   href={compareHref(font)}
-                  class="min-h-8 gap-2 rounded-md border border-slate-300 px-2 text-sm transition active:scale-95 active:bg-slate-200 dark:border-slate-700 dark:active:bg-slate-700"
+                  class="min-h-8 gap-2 rounded-md border border-slate-300 px-2 text-sm transition-transform active:scale-95 active:bg-slate-200 dark:border-slate-700 dark:active:bg-slate-700"
                   iconClass="h-4 w-4"
                   icon="icon-[lucide--columns-2]"
                   label="Compare"
