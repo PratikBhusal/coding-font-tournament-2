@@ -29,6 +29,8 @@ function paintView(prefix: string, d: DOMStringMap, maximizeHref: string) {
   const name = document.getElementById(`${prefix}-name`);
   if (name) {
     name.textContent = d.displayName ?? "";
+    // Track the painted font so the close buttons know which font each view holds.
+    name.dataset.family = d.family ?? "";
     if (d.cssFamily) name.style.fontFamily = d.cssFamily;
     name.style.fontFeatureSettings = d.featBoth || "normal";
   }
@@ -67,10 +69,6 @@ function highlightRow(active: HTMLElement) {
 function applyFont(row: HTMLElement) {
   const d = row.dataset;
   paintView("browse", d, d.path ?? "");
-
-  const name = document.getElementById("browse-name");
-  if (name) name.dataset.family = d.family ?? "";
-
   closeCompare();
   refreshCompareLinks(d.path ?? "", d.slug ?? "");
   highlightRow(row);
@@ -88,15 +86,20 @@ function openCompare(row: HTMLElement) {
 
   const compare = document.getElementById("browse-compare");
   const board = document.getElementById("browse-board");
+  const leftClose = document.getElementById("browse-close");
   if (compare) compare.hidden = false;
   if (board) board.classList.add("md:grid-cols-2");
+  // While comparing, the left view also gets a close button (removes the left font).
+  if (leftClose) leftClose.hidden = false;
 }
 
 function closeCompare() {
   const compare = document.getElementById("browse-compare");
   const board = document.getElementById("browse-board");
+  const leftClose = document.getElementById("browse-close");
   if (compare) compare.hidden = true;
   if (board) board.classList.remove("md:grid-cols-2");
+  if (leftClose) leftClose.hidden = true;
 }
 
 function selectFamily(family: string) {
@@ -124,8 +127,21 @@ export function initBrowseFont() {
       const target = event.target as HTMLElement | null;
       if (!target) return;
 
+      // Right view's close keeps the left font (just exit comparison).
       if (target.closest("#browse-compare-close")) {
         closeCompare();
+        return;
+      }
+
+      // Left view's close removes the left font: promote the compared (right) font to
+      // the sole view.
+      if (target.closest("#browse-close")) {
+        const rightFamily =
+          document.getElementById("browse-compare-name")?.dataset.family;
+        if (rightFamily) {
+          selectFamily(rightFamily);
+          writeJSON(FONT_KEY, rightFamily);
+        }
         return;
       }
 

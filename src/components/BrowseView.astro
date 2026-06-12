@@ -13,11 +13,20 @@ type Props = {
   /** Root element id (used to show/hide the compare column). */
   id?: string;
   hidden?: boolean;
-  /** Render a close button (compare column only). */
+  /** Render a close button. */
   showClose?: boolean;
+  /** Start the close button hidden (the left view only shows it while comparing). */
+  closeHidden?: boolean;
 };
 
-const { prefix, font, id, hidden = false, showClose = false } = Astro.props;
+const {
+  prefix,
+  font,
+  id,
+  hidden = false,
+  showClose = false,
+  closeHidden = false,
+} = Astro.props;
 const actionClass = "h-9 gap-2 px-3";
 ---
 
@@ -64,6 +73,7 @@ const actionClass = "h-9 gap-2 px-3";
           <IconButton
             as="button"
             id={`${prefix}-close`}
+            hidden={closeHidden}
             class={`${actionClass} cursor-pointer`}
             icon="icon-[lucide--x]"
             title="Close comparison"
