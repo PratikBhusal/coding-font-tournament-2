@@ -166,7 +166,6 @@ const hostedFonts: CodingFont[] = [
   },
   {
     family: "Monaspace Argon",
-    includeInInitialTournament: true,
     variants: ["regular", "italic"],
     files: {
       regular:

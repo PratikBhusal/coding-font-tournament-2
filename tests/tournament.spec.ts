@@ -1,4 +1,12 @@
 import { test, expect } from "@playwright/test";
+import codingFonts from "../src/lib/codingFonts";
+
+const totalFontCount = codingFonts.length;
+const curatedFontCount = codingFonts.filter(
+  (font) => font.includeInInitialTournament,
+).length;
+const curatedBadgeText = `${curatedFontCount}/${totalFontCount}`;
+const allBadgeText = `${totalFontCount}/${totalFontCount}`;
 
 test.describe("tournament (/)", () => {
   test("renders code specimens after a full page load", async ({ page }) => {
@@ -57,17 +65,17 @@ test.describe("tournament (/)", () => {
     // Regression: reconcile() in @nanostores/solid's useStore collapsed the count
     // to 1 after All -> Curated because the font objects have no `id` key. We now
     // hand back the raw nanostore value (see src/lib/useStore.ts).
-    await expect(badge).toHaveText("12/38");
+    await expect(badge).toHaveText(curatedBadgeText);
 
     await page.getByRole("button", { name: "All", exact: true }).click();
-    await expect(badge).toHaveText("38/38");
+    await expect(badge).toHaveText(allBadgeText);
 
     await page.getByRole("button", { name: "Curated", exact: true }).click();
-    await expect(badge).toHaveText("12/38");
+    await expect(badge).toHaveText(curatedBadgeText);
 
-    // Idempotent: clicking Curated again stays at 12.
+    // Idempotent: clicking Curated again keeps the curated count.
     await page.getByRole("button", { name: "Curated", exact: true }).click();
-    await expect(badge).toHaveText("12/38");
+    await expect(badge).toHaveText(curatedBadgeText);
 
     // Toggling a curated font off decrements the count and unchecks the box.
     const firaBox = page
@@ -76,17 +84,22 @@ test.describe("tournament (/)", () => {
       .locator('input[type="checkbox"]');
     await firaBox.click();
     await expect(firaBox).not.toBeChecked();
-    await expect(badge).toHaveText("11/38");
+    await expect(badge).toHaveText(`${curatedFontCount - 1}/${totalFontCount}`);
   });
 
-  test("SSR renders the curated selection (no 0/38 flash)", async ({
+  test("SSR renders the curated selection (no 0/total flash)", async ({
     request,
   }) => {
     // The sidebar is client:load, so the server must emit the seeded selection.
     // request.get() returns the unhydrated server HTML (no client JS runs); if the
-    // default seed regressed to a window-guarded effect this would render 0/38.
+    // default seed regressed to a window-guarded effect this would render 0/{total}.
     const html = await (await request.get("./")).text();
-    expect(html).toMatch(/Font Pool<\/span>.*?12<!--\/-->\/<!--\$-->38/s);
+    expect(html).toMatch(
+      new RegExp(
+        `Font Pool<\\/span>.*?${curatedFontCount}<!--\\/-->\\/<!--\\$-->${totalFontCount}`,
+        "s",
+      ),
+    );
   });
 
   test("a stored selection overrides the default on reload", async ({
@@ -112,7 +125,7 @@ test.describe("tournament (/)", () => {
       .getByTestId("tournament-sidebar")
       .locator("text=/^\\d+\\/\\d+$/")
       .first();
-    await expect(badge).toHaveText("2/38");
+    await expect(badge).toHaveText(`2/${totalFontCount}`);
   });
 
   test("hides the SVG button until there is a winner", async ({ page }) => {
