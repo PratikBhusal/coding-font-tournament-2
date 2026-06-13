@@ -1,11 +1,12 @@
 ---
 import type { CodingFont } from "../lib/codingFonts";
+import { getFontDisplayName, getFontStyle } from "../lib/fontFeatures";
 import {
-  getCssFontFamily,
-  getFontDisplayName,
-  getFontFeatures,
-  getFontStyle,
-} from "../lib/fontFeatures";
+  getFontTableCompareHref,
+  getFontTableSearchValue,
+  getSelectableFontTableRowAttrs,
+  shouldShowFontTableCompareLink,
+} from "../lib/fontTable";
 import { getFontPath, getFontSlug } from "../lib/routes";
 import ButtonGroup from "./ButtonGroup.astro";
 import IconButton from "./IconButton.astro";
@@ -27,28 +28,8 @@ const {
   selectable = false,
 } = Astro.props;
 
-const compareHref = (font: CodingFont) =>
-  baseFont && baseFont.family !== font.family
-    ? `${getFontPath(baseFont.family)}/${getFontSlug(font.family)}`
-    : undefined;
-
-// Data the browse selector script needs to restyle the specimen + header in place.
 const selectAttrs = (font: CodingFont) =>
-  selectable
-    ? {
-        "data-family": font.family,
-        "data-css-family": getCssFontFamily(font),
-        "data-feat-both": getFontFeatures(font, true, true) || "normal",
-        "data-feat-lig": getFontFeatures(font, false, true) || "normal",
-        "data-feat-ot": getFontFeatures(font, true, false) || "normal",
-        "data-display-name": getFontDisplayName(font),
-        "data-slug": getFontSlug(font.family),
-        "data-path": getFontPath(font.family),
-        "data-site-url": font.siteUrl,
-        "data-download-url": font.downloadUrl,
-        "data-system": font.isSystemFont ? "1" : "0",
-      }
-    : {};
+  selectable ? getSelectableFontTableRowAttrs(font) : {};
 ---
 
 <div
@@ -69,7 +50,7 @@ const selectAttrs = (font: CodingFont) =>
       {
         fonts.map((font) => (
           <tr
-            data-search={`${font.family} ${getFontDisplayName(font)}`.toLowerCase()}
+            data-search={getFontTableSearchValue(font)}
             {...selectAttrs(font)}
             class={`border-b border-slate-200 hover:bg-blue-50 dark:border-slate-800 dark:hover:bg-blue-950 ${
               selectable ? "cursor-pointer" : ""
@@ -104,10 +85,13 @@ const selectAttrs = (font: CodingFont) =>
               ) : (
                 // Hide on the base font's own row (no self-compare) and on the
                 // currently-active row, whose Compare link would point to this page.
-                compareHref(font) &&
-                font.family !== activeFamily && (
+                shouldShowFontTableCompareLink({
+                  font,
+                  baseFont,
+                  activeFamily,
+                }) && (
                   <IconButton
-                    href={compareHref(font)}
+                    href={getFontTableCompareHref(font, baseFont)}
                     class="min-h-8 gap-2 rounded-md border border-slate-300 px-2 text-sm transition-transform active:scale-95 active:bg-slate-200 dark:border-slate-700 dark:active:bg-slate-700"
                     iconClass="h-4 w-4"
                     icon="icon-[lucide--columns-2]"

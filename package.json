@@ -10,6 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "test": "wireit",
+    "test:unit": "wireit",
     "test:e2e": "wireit",
     "format": "prettier --write .",
     "astro": "astro"
@@ -17,8 +18,12 @@
   "wireit": {
     "test": {
       "dependencies": [
+        "test:unit",
         "test:e2e"
       ]
+    },
+    "test:unit": {
+      "command": "vitest"
     },
     "test:e2e": {
       "command": "playwright test"
@@ -51,6 +56,7 @@
     "shiki": "^4.2.0",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3",
+    "vitest": "^4.1.8",
     "wireit": "^0.14.12"
   }
 }

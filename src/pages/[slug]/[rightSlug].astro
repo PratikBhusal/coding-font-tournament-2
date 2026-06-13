@@ -9,22 +9,12 @@ import FontHeader from "../../components/FontHeader.astro";
 import Specimen from "../../components/Specimen.astro";
 import CodeSpecimen from "../../components/CodeSpecimen.astro";
 import codingFonts from "../../lib/codingFonts";
+import { getFontComparePageStaticPaths } from "../../lib/fontPageRoutes";
 import { getFontDisplayName } from "../../lib/fontFeatures";
 import { getFontPath, getFontSlug, withBase } from "../../lib/routes";
 
 export function getStaticPaths() {
-  return codingFonts.flatMap((font) =>
-    codingFonts
-      // Never pair a font with itself — that's the single-font `[slug]` page.
-      .filter((compareFont) => compareFont.family !== font.family)
-      .map((compareFont) => ({
-        params: {
-          slug: getFontSlug(font.family),
-          rightSlug: getFontSlug(compareFont.family),
-        },
-        props: { font, compareFont },
-      })),
-  );
+  return getFontComparePageStaticPaths(codingFonts);
 }
 
 const { font, compareFont } = Astro.props;

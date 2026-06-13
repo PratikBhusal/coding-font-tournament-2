@@ -7,7 +7,7 @@ const baseURL = `http://localhost:${PORT}/coding-font-tournament/`;
 
 /** See https://playwright.dev/docs/test-configuration. */
 export default defineConfig({
-  testDir: "./tests",
+  testDir: "./tests/e2e",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -29,11 +29,23 @@ export default defineConfig({
     { name: "desktop-webkit", use: { ...devices["Desktop Safari"] } },
     // Tests treat any "mobile-*" project as mobile; everything else is desktop.
     // iPhone 15 runs WebKit — covers the mobile <select> change-event behavior.
-    { name: "mobile-iphone-15", use: { ...devices["iPhone 15"] } },
+    {
+      name: "mobile-iphone-15",
+      testIgnore: /.*\.desktop\.spec\.ts/,
+      use: { ...devices["iPhone 15"] },
+    },
     // Galaxy Z Flip and Pixel 10 aren't in Playwright's device registry, so we use
     // the closest available presets: Galaxy S24 and Pixel 7.
-    { name: "mobile-pixel-10", use: { ...devices["Pixel 7"] } },
-    { name: "mobile-galaxy-z-flip", use: { ...devices["Galaxy S24"] } },
+    {
+      name: "mobile-pixel-10",
+      testIgnore: /.*\.desktop\.spec\.ts/,
+      use: { ...devices["Pixel 7"] },
+    },
+    {
+      name: "mobile-galaxy-z-flip",
+      testIgnore: /.*\.desktop\.spec\.ts/,
+      use: { ...devices["Galaxy S24"] },
+    },
   ],
 
   webServer: {

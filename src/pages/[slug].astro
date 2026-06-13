@@ -9,14 +9,12 @@ import FontHeader from "../components/FontHeader.astro";
 import Specimen from "../components/Specimen.astro";
 import CodeSpecimen from "../components/CodeSpecimen.astro";
 import codingFonts from "../lib/codingFonts";
+import { getFontPageStaticPaths } from "../lib/fontPageRoutes";
 import { getFontDisplayName } from "../lib/fontFeatures";
 import { getFontSlug, withBase } from "../lib/routes";
 
 export function getStaticPaths() {
-  return codingFonts.map((font) => ({
-    params: { slug: getFontSlug(font.family) },
-    props: { font },
-  }));
+  return getFontPageStaticPaths(codingFonts);
 }
 
 const { font } = Astro.props;
