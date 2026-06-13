@@ -171,7 +171,7 @@ function StartButton() {
       onClick={startTournament}
     >
       <span class="icon-[lucide--swords] h-4 w-4 shrink-0" />
-      Start Tournament
+      Start
     </button>
   );
 }
