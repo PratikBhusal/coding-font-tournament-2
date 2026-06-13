@@ -290,6 +290,35 @@ test.describe("tournament (/)", () => {
     await expect(progress).not.toHaveText(before);
   });
 
+  test("unified view: Choose buttons keep A/B prefixes when showing names", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
+    await page.getByRole("button", { name: "Unified", exact: true }).click();
+
+    await expect(page.getByRole("button", { name: /Choose A/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Choose B/ })).toBeVisible();
+
+    const showName = page
+      .locator("label", { hasText: "Show Name" })
+      .locator('input[type="checkbox"]');
+    await showName.check();
+
+    await expect(
+      page.getByRole("button", { name: /Choose A: .+/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Choose B: .+/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /^Choose (?!A:|B:).+/ }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: /^← Choose (?!A:|B:).+/ }),
+    ).toHaveCount(0);
+  });
+
   test("mobile nav menu: hamburger reveals Tournament/Browse links", async ({
     page,
   }, testInfo) => {

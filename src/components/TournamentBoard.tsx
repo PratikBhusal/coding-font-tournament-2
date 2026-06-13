@@ -295,6 +295,21 @@ function PlayerCard(props: {
   );
 }
 
+function ChooseButtonLabel(props: { side: "A" | "B"; font: CodingFont }) {
+  const showName = useStore($showName);
+  const label = () => `Choose ${props.side}`;
+
+  return (
+    <Show
+      when={showName()}
+      fallback={<span class="whitespace-nowrap">{label()}</span>}
+    >
+      <span>{label()}:</span>
+      <span class="min-w-0 truncate">{getFontDisplayName(props.font)}</span>
+    </Show>
+  );
+}
+
 function WinnerView(props: {
   winner: CodingFont;
   highlighted: Highlighted;
@@ -551,7 +566,7 @@ export default function TournamentBoard(props: TournamentBoardProps) {
         }
       >
         <Show when={board.leftPlayer() && board.rightPlayer()}>
-          <div class="flex min-h-0 flex-1 flex-col gap-4 p-4">
+          <div class="@container flex min-h-0 flex-1 flex-col gap-4 p-4">
             <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border-2 border-slate-300 bg-white p-2 dark:border-slate-700 dark:bg-slate-950">
               <UnifiedSpecimen
                 fontA={board.leftPlayer()!}
@@ -560,11 +575,11 @@ export default function TournamentBoard(props: TournamentBoardProps) {
                 class="overflow-hidden rounded-md"
               />
             </div>
-            <div class="flex shrink-0 items-center justify-center gap-4">
+            <div class="grid shrink-0 grid-cols-1 gap-4 @md:grid-cols-2">
               <button
                 ref={(element) => (leftButton = element)}
                 type="button"
-                class="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-semibold text-white shadow-lg transition-transform hover:bg-blue-500 active:scale-95 active:bg-blue-700 active:shadow-md"
+                class="flex min-w-0 items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-semibold text-white shadow-lg transition-transform hover:bg-blue-500 active:scale-95 active:bg-blue-700 active:shadow-md"
                 onClick={(event) =>
                   board.chooseWinner(board.leftPlayer()!, event.currentTarget)
                 }
@@ -572,19 +587,17 @@ export default function TournamentBoard(props: TournamentBoardProps) {
                 <kbd class="rounded border border-slate-700 bg-slate-900 px-1.5 py-0.5 text-xs text-white">
                   ←
                 </kbd>
-                Choose{" "}
-                {showName() ? getFontDisplayName(board.leftPlayer()!) : "A"}
+                <ChooseButtonLabel side="A" font={board.leftPlayer()!} />
               </button>
               <button
                 ref={(element) => (rightButton = element)}
                 type="button"
-                class="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-semibold text-white shadow-lg transition-transform hover:bg-blue-500 active:scale-95 active:bg-blue-700 active:shadow-md"
+                class="flex min-w-0 items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-semibold text-white shadow-lg transition-transform hover:bg-blue-500 active:scale-95 active:bg-blue-700 active:shadow-md"
                 onClick={(event) =>
                   board.chooseWinner(board.rightPlayer()!, event.currentTarget)
                 }
               >
-                Choose{" "}
-                {showName() ? getFontDisplayName(board.rightPlayer()!) : "B"}
+                <ChooseButtonLabel side="B" font={board.rightPlayer()!} />
                 <kbd class="rounded border border-slate-700 bg-slate-900 px-1.5 py-0.5 text-xs text-white">
                   →
                 </kbd>
