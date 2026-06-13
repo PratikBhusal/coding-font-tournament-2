@@ -127,6 +127,26 @@ function createWinnersLoserMatchLabelMap(
   return loserMatchLabelMap;
 }
 
+function isPlayableMatch(match: SvgTournamentMatch) {
+  return match.players.length >= playersPerBracket;
+}
+
+function createMatchProgressLabelMap(rounds: SvgTournamentMatch[][]) {
+  const playableRounds = rounds.filter((round) => round.some(isPlayableMatch));
+  const totalRounds = playableRounds.length;
+  const progressLabels = new Map<SvgTournamentMatch, string>();
+
+  playableRounds.forEach((round, roundIndex) => {
+    const playableMatches = round.filter(isPlayableMatch);
+
+    playableMatches.forEach((match, matchIndex) => {
+      progressLabels.set(match, `R:${roundIndex + 1} M:${matchIndex + 1}`);
+    });
+  });
+
+  return progressLabels;
+}
+
 function getSvgFontLabel(font: CodingFont, matchLabel?: string) {
   const prefix = matchLabel ? `${matchLabel}: ` : "";
 
@@ -258,6 +278,14 @@ function createSingleEliminationTournamentSvg(
   const padding = 0;
   const metrics = createSvgMetrics(fontSize);
   const colors = createSvgColors();
+  const matchProgressLabelMap = createMatchProgressLabelMap(visibleRounds);
+  const matchProgressLabelMeasurements = Array.from(
+    matchProgressLabelMap.values(),
+  ).map((label) =>
+    measureSvgTextBounds(label, metrics.labelFontSize, [
+      getCssMonospaceFallback(),
+    ]),
+  );
   const fontNameMeasurements = bracketFonts.map((font) =>
     measureSvgTextBounds(getFontDisplayName(font), fontSize, [
       getCssFontFamily(font),
@@ -265,8 +293,10 @@ function createSingleEliminationTournamentSvg(
     ]),
   );
   const bracketWidth = Math.ceil(
-    Math.max(...fontNameMeasurements.map((measurement) => measurement.right)) +
-      metrics.fontNameTextInset,
+    Math.max(
+      ...fontNameMeasurements.map((measurement) => measurement.right),
+      ...matchProgressLabelMeasurements.map((measurement) => measurement.right),
+    ) + metrics.fontNameTextInset,
   );
   const championWidth = bracketWidth;
   const bracketHeight =
@@ -274,9 +304,34 @@ function createSingleEliminationTournamentSvg(
   const bracketStep = bracketHeight + metrics.bracketGap;
   const roundCenters: number[][] = [];
 
+  function getMatchProgressLabelHeight(match: SvgTournamentMatch) {
+    return matchProgressLabelMap.has(match)
+      ? metrics.labelFontSize + metrics.matchNumberLabelGap
+      : 0;
+  }
+
+  function getRenderedTopOffset(match: SvgTournamentMatch | undefined) {
+    const playerOffset =
+      match?.players.length === singlePlayerCount
+        ? metrics.playerHeight / midpointDivisor
+        : bracketHeight / midpointDivisor;
+
+    return match
+      ? playerOffset + getMatchProgressLabelHeight(match)
+      : playerOffset;
+  }
+
+  function getRenderedBottomOffset(match: SvgTournamentMatch) {
+    return match.players.length === singlePlayerCount
+      ? metrics.playerHeight / midpointDivisor
+      : bracketHeight / midpointDivisor;
+  }
+
   function getRoundDefaultCenter(bracketIndex: number) {
     return (
-      padding + bracketHeight / midpointDivisor + bracketIndex * bracketStep
+      padding +
+      getRenderedTopOffset(visibleRounds[firstRoundIndex][bracketIndex]) +
+      bracketIndex * bracketStep
     );
   }
 
@@ -410,6 +465,22 @@ function createSingleEliminationTournamentSvg(
 </g>`);
   }
 
+  function renderMatchProgressLabel(
+    match: SvgTournamentMatch,
+    x: number,
+    topPlayerY: number,
+  ) {
+    const matchProgressLabel = matchProgressLabelMap.get(match);
+
+    if (!matchProgressLabel) {
+      return;
+    }
+
+    output.push(
+      `<text x="${x + metrics.fontNameTextInset}" y="${topPlayerY - metrics.matchNumberLabelGap}" fill="${colors.primaryTextColor}" font-size="${metrics.labelFontSize}" font-weight="${metrics.labelFontWeight}" font-family="${getCssMonospaceFallback()}">${escapeXml(matchProgressLabel)}</text>`,
+    );
+  }
+
   function renderBracket(
     bracket: SvgTournamentMatch,
     roundIndex: number,
@@ -429,10 +500,15 @@ function createSingleEliminationTournamentSvg(
       return;
     }
 
+    const topPlayerY =
+      center - metrics.playerGap / midpointDivisor - metrics.playerHeight;
+
+    renderMatchProgressLabel(bracket, x, topPlayerY);
+
     players.forEach((font, playerIndex) => {
       const y =
         playerIndex === firstPlayerIndex
-          ? center - metrics.playerGap / midpointDivisor - metrics.playerHeight
+          ? topPlayerY
           : center + metrics.playerGap / midpointDivisor;
       renderPlayer(font, x, y, bracket?.winner?.family === font.family);
     });
@@ -551,6 +627,7 @@ function createDoubleEliminationTournamentSvg(
   const winnersLoserMatchLabelMap = createWinnersLoserMatchLabelMap(
     game.winnersRounds ?? [],
   );
+  const matchProgressLabelMap = createMatchProgressLabelMap(game.rounds);
   const firstLosersMatchByFontFamily = new Map<string, SvgTournamentMatch>();
 
   sections
@@ -591,6 +668,10 @@ function createDoubleEliminationTournamentSvg(
     return winnersLoserMatchLabelMap.get(match.loser.family);
   }
 
+  function getMatchProgressLabel(match: SvgTournamentMatch) {
+    return matchProgressLabelMap.get(match);
+  }
+
   function isHiddenMatch(
     sectionLabel: SvgTournamentSection,
     match: SvgTournamentMatch,
@@ -621,6 +702,13 @@ function createDoubleEliminationTournamentSvg(
       font: champion,
       label: getFontDisplayName(champion),
     });
+  const matchProgressLabelMeasurements = Array.from(
+    matchProgressLabelMap.values(),
+  ).map((label) =>
+    measureSvgTextBounds(label, metrics.labelFontSize, [
+      getCssMonospaceFallback(),
+    ]),
+  );
   const fontNameMeasurements = measuredFontLabels.map(({ font, label }) =>
     measureSvgTextBounds(label, fontSize, [
       getCssFontFamily(font),
@@ -628,8 +716,10 @@ function createDoubleEliminationTournamentSvg(
     ]),
   );
   const bracketWidth = Math.ceil(
-    Math.max(...fontNameMeasurements.map((measurement) => measurement.right)) +
-      metrics.fontNameTextInset,
+    Math.max(
+      ...fontNameMeasurements.map((measurement) => measurement.right),
+      ...matchProgressLabelMeasurements.map((measurement) => measurement.right),
+    ) + metrics.fontNameTextInset,
   );
   const championWidth = bracketWidth;
   const bracketHeight =
@@ -649,7 +739,7 @@ function createDoubleEliminationTournamentSvg(
     );
   }
 
-  function getMatchNumberLabelHeight(
+  function getMatchProgressLabelHeight(
     sectionLabel: SvgTournamentSection,
     match: SvgTournamentMatch,
   ) {
@@ -657,7 +747,7 @@ function createDoubleEliminationTournamentSvg(
       return 0;
     }
 
-    return getMatchNumberLabel(sectionLabel, match)
+    return getMatchProgressLabel(match)
       ? metrics.labelFontSize + metrics.matchNumberLabelGap
       : 0;
   }
@@ -675,7 +765,7 @@ function createDoubleEliminationTournamentSvg(
         ? metrics.playerHeight / midpointDivisor
         : bracketHeight / midpointDivisor;
 
-    return playerOffset + getMatchNumberLabelHeight(sectionLabel, match);
+    return playerOffset + getMatchProgressLabelHeight(sectionLabel, match);
   }
 
   function getRenderedBottomOffset(
@@ -906,20 +996,19 @@ function createDoubleEliminationTournamentSvg(
 </g>`);
   }
 
-  function renderMatchNumberLabel(
-    sectionLabel: SvgTournamentSection,
+  function renderMatchProgressLabel(
     match: SvgTournamentMatch,
     x: number,
     topPlayerY: number,
   ) {
-    const matchNumberLabel = getMatchNumberLabel(sectionLabel, match);
+    const matchProgressLabel = getMatchProgressLabel(match);
 
-    if (!matchNumberLabel) {
+    if (!matchProgressLabel) {
       return;
     }
 
     output.push(
-      `<text x="${x + metrics.fontNameTextInset}" y="${topPlayerY - metrics.matchNumberLabelGap}" fill="${colors.primaryTextColor}" font-size="${metrics.labelFontSize}" font-weight="${metrics.labelFontWeight}" font-family="${getCssMonospaceFallback()}">${escapeXml(matchNumberLabel)}</text>`,
+      `<text x="${x + metrics.fontNameTextInset}" y="${topPlayerY - metrics.matchNumberLabelGap}" fill="${colors.primaryTextColor}" font-size="${metrics.labelFontSize}" font-weight="${metrics.labelFontWeight}" font-family="${getCssMonospaceFallback()}">${escapeXml(matchProgressLabel)}</text>`,
     );
   }
 
@@ -947,7 +1036,7 @@ function createDoubleEliminationTournamentSvg(
     const topPlayerY =
       center - metrics.playerGap / midpointDivisor - metrics.playerHeight;
 
-    renderMatchNumberLabel(sectionLabel, match, x, topPlayerY);
+    renderMatchProgressLabel(match, x, topPlayerY);
 
     match.players.forEach((font, playerIndex) => {
       const playerY =

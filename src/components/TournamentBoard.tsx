@@ -74,14 +74,126 @@ function specimenStyle(font: CodingFont) {
   return `font-family: ${getCssFontFamily(font)}; --feat-both: ${featBoth}; --feat-lig: ${featLig}; --feat-ot: ${featOt}`;
 }
 
-function getTotalPlayableMatchCount(
+function createEntryPairs(entryCount: number) {
+  const entryPairs: number[] = [];
+
+  for (let index = 0; index < entryCount; index += 2) {
+    entryPairs.push(Math.min(2, entryCount - index));
+  }
+
+  return entryPairs;
+}
+
+function getPreviousPowerOfTwo(value: number) {
+  return 2 ** Math.floor(Math.log2(value));
+}
+
+function hasPlayableMatch(entryGroups: number[]) {
+  return entryGroups.some((entryCount) => entryCount >= 2);
+}
+
+function getDoubleEliminationPlayableRoundCount(playerCount: number) {
+  const fullRoundSize = getPreviousPowerOfTwo(playerCount);
+  const playInMatchCount = playerCount - fullRoundSize;
+  const playInPlayerCount = playInMatchCount * 2;
+  let playableRounds = 0;
+  let winnersPool = 0;
+  let losersPool = 0;
+  let pendingWinnersEntries =
+    playInMatchCount > 0 ? playerCount - playInPlayerCount : 0;
+  let pendingLosersDropIns = 0;
+
+  function collectWinnersRound(entryGroups: number[]) {
+    winnersPool = entryGroups.length + pendingWinnersEntries;
+    pendingWinnersEntries = 0;
+    pendingLosersDropIns += entryGroups.filter(
+      (entryCount) => entryCount >= 2,
+    ).length;
+  }
+
+  function collectLosersRound(entryGroups: number[]) {
+    losersPool = entryGroups.length;
+  }
+
+  function scheduleRound(entryGroups: number[]) {
+    if (hasPlayableMatch(entryGroups)) playableRounds++;
+  }
+
+  function createLosersRoundEntryGroups() {
+    const survivors = losersPool;
+    const dropIns = pendingLosersDropIns;
+
+    losersPool = 0;
+    pendingLosersDropIns = 0;
+
+    if (survivors === 0) return createEntryPairs(dropIns);
+    if (dropIns === 0) return createEntryPairs(survivors);
+
+    const pairedEntryCount = Math.min(survivors, dropIns);
+    const survivorByeCount = survivors - pairedEntryCount;
+    const dropInByeCount = dropIns - pairedEntryCount;
+
+    return Array(pairedEntryCount)
+      .fill(2)
+      .concat(Array(survivorByeCount + dropInByeCount).fill(1));
+  }
+
+  const initialWinnersEntryCount =
+    playInMatchCount > 0 ? playInPlayerCount : playerCount;
+  let round = createEntryPairs(initialWinnersEntryCount);
+  scheduleRound(round);
+  collectWinnersRound(round);
+
+  while (true) {
+    if (pendingLosersDropIns > 0) {
+      round = createLosersRoundEntryGroups();
+      scheduleRound(round);
+      collectLosersRound(round);
+      continue;
+    }
+
+    if (winnersPool === 1 && losersPool === 1) {
+      scheduleRound([2]);
+      break;
+    }
+
+    if (winnersPool > 1) {
+      const nextWinnersRoundLoserCount = Math.floor(winnersPool / 2);
+
+      if (losersPool > nextWinnersRoundLoserCount && losersPool > 1) {
+        round = createLosersRoundEntryGroups();
+        scheduleRound(round);
+        collectLosersRound(round);
+        continue;
+      }
+
+      round = createEntryPairs(winnersPool);
+      scheduleRound(round);
+      collectWinnersRound(round);
+      continue;
+    }
+
+    if (losersPool > 1) {
+      round = createLosersRoundEntryGroups();
+      scheduleRound(round);
+      collectLosersRound(round);
+      continue;
+    }
+
+    break;
+  }
+
+  return playableRounds;
+}
+
+function getTotalPlayableRoundCount(
   playerCount: number,
   eliminationMode: TournamentEliminationMode,
 ) {
   if (playerCount < 2) return 0;
   return eliminationMode === TournamentEliminationMode.Double
-    ? (playerCount - 1) * 2
-    : playerCount - 1;
+    ? getDoubleEliminationPlayableRoundCount(playerCount)
+    : Math.ceil(Math.log2(playerCount));
 }
 
 function isPlayableMatch(match: ProgressMatch | null | undefined) {
@@ -91,25 +203,32 @@ function isPlayableMatch(match: ProgressMatch | null | undefined) {
 function getTournamentProgress(
   activeGame: TournamentGame | undefined,
   activeBracket: TournamentResult | undefined,
-  activeTotalPlayableMatches: number,
-  fallbackTotalPlayableMatches: number,
+  activeTotalPlayableRounds: number,
 ) {
-  const totalMatches = activeGame
-    ? activeTotalPlayableMatches
-    : fallbackTotalPlayableMatches;
-  if (!totalMatches) return null;
-  const completedMatches = activeGame
-    ? activeGame.rounds
-        .flat()
-        .filter((match) => isPlayableMatch(match) && match.winner).length
-    : 0;
+  if (!activeGame || !activeTotalPlayableRounds) return null;
+
+  const currentRound = activeGame.rounds[activeGame.currentRound] ?? [];
+  const currentRoundMatches = currentRound.filter(isPlayableMatch);
+  if (!currentRoundMatches.length) return null;
+
+  const currentPlayableRound =
+    activeGame.rounds
+      .slice(0, activeGame.currentRound + 1)
+      .filter((round) => round.some(isPlayableMatch)).length || 1;
+  const completedMatches = currentRoundMatches.filter(
+    (match) => match.winner,
+  ).length;
   const hasChampion = Boolean(activeBracket?.winner);
   return {
     currentMatch: hasChampion
-      ? totalMatches
-      : Math.min(completedMatches + 1, totalMatches),
+      ? currentRoundMatches.length
+      : Math.min(completedMatches + 1, currentRoundMatches.length),
+    currentRound: hasChampion
+      ? activeTotalPlayableRounds
+      : currentPlayableRound,
     completedMatches,
-    totalMatches,
+    totalMatches: currentRoundMatches.length,
+    totalRounds: activeTotalPlayableRounds,
   };
 }
 
@@ -389,25 +508,26 @@ function WinnerView(props: {
 function createTournamentBoard(): TournamentBoardController {
   const [game, setGame] = createSignal<TournamentGame>();
   const [currentBracket, setCurrentBracket] = createSignal<TournamentResult>();
-  const [totalPlayableMatches, setTotalPlayableMatches] = createSignal(0);
+  const [totalPlayableRounds, setTotalPlayableRounds] = createSignal(0);
 
   const selectedFonts = useStore($selectedFonts);
   const eliminationMode = useStore($eliminationMode);
 
-  const configuredPlayableMatches = () =>
-    getTotalPlayableMatchCount(selectedFonts().length, eliminationMode());
+  const configuredPlayableRounds = () =>
+    getTotalPlayableRoundCount(selectedFonts().length, eliminationMode());
   const progress = createMemo(() =>
     getTournamentProgress(
       game(),
       currentBracket(),
-      totalPlayableMatches(),
-      configuredPlayableMatches(),
+      totalPlayableRounds() || configuredPlayableRounds(),
     ),
   );
   const progressLabel = () =>
     currentBracket()?.winner || !progress()
       ? ""
-      : `Match ${progress()!.currentMatch}/${progress()!.totalMatches}`;
+      : `Round ${progress()!.currentRound}/${progress()!.totalRounds} Match ${
+          progress()!.currentMatch
+        }/${progress()!.totalMatches}`;
   const currentPlayers = () =>
     "players" in (currentBracket() ?? {})
       ? (currentBracket() as TournamentMatch).players
@@ -421,7 +541,7 @@ function createTournamentBoard(): TournamentBoardController {
     const fonts = $selectedFonts.get();
     const mode = $eliminationMode.get();
     $savedTournamentResult.set(null);
-    setTotalPlayableMatches(getTotalPlayableMatchCount(fonts.length, mode));
+    setTotalPlayableRounds(getTotalPlayableRoundCount(fonts.length, mode));
     const nextGame = createGame(fonts, { eliminationMode: mode });
     setGame(nextGame);
     setCurrentBracket(nextGame.startGame());
@@ -440,7 +560,7 @@ function createTournamentBoard(): TournamentBoardController {
         completedAt: new Date().toISOString(),
         game: activeGame,
         currentBracket: { winner: activeGame.champion },
-        totalPlayableMatches: totalPlayableMatches(),
+        totalPlayableRounds: totalPlayableRounds(),
       };
       setCurrentBracket(result.currentBracket);
       $savedTournamentResult.set(result);
@@ -479,7 +599,7 @@ function createTournamentBoard(): TournamentBoardController {
     if (!saved) return false;
     setGame(saved.game);
     setCurrentBracket(saved.currentBracket);
-    setTotalPlayableMatches(saved.totalPlayableMatches);
+    setTotalPlayableRounds(saved.totalPlayableRounds ?? 0);
     return true;
   }
 

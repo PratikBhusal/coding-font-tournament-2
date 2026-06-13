@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import codingFonts from "../src/lib/codingFonts";
 
 const totalFontCount = codingFonts.length;
@@ -7,6 +7,34 @@ const curatedFontCount = codingFonts.filter(
 ).length;
 const curatedBadgeText = `${curatedFontCount}/${totalFontCount}`;
 const allBadgeText = `${totalFontCount}/${totalFontCount}`;
+
+async function expectSingleEliminationRoundCount(
+  page: Page,
+  selectedFamilies: string[],
+) {
+  const expectedRoundCount = Math.ceil(Math.log2(selectedFamilies.length));
+
+  await page.addInitScript(
+    ({ selectedFamilies }) => {
+      localStorage.setItem(
+        "tournamentFontFamilies",
+        JSON.stringify(selectedFamilies),
+      );
+      localStorage.setItem(
+        "tournamentEliminationMode",
+        JSON.stringify("single"),
+      );
+    },
+    { selectedFamilies },
+  );
+
+  await page.goto("./");
+  await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
+
+  await expect(page.getByTestId("tournament-progress")).toHaveText(
+    new RegExp(`^Round 1/${expectedRoundCount} Match 1/\\d+$`),
+  );
+}
 
 test.describe("tournament (/)", () => {
   test("renders code specimens after a full page load", async ({ page }) => {
@@ -229,6 +257,7 @@ test.describe("tournament (/)", () => {
     // Colors are resolved from the `--*` palette and emitted as portable hex. If a
     // variable failed to resolve, fills/strokes would be empty instead of `#rrggbb`.
     expect(svg).toContain("<svg");
+    expect(svg).toMatch(/R:\d+ M:\d+/);
     expect(svg).toMatch(/(fill|stroke)="#[0-9a-fA-F]{6}"/);
     expect(svg).not.toContain("oklch(");
     expect(svg).not.toMatch(/(fill|stroke)="\s*"/);
@@ -279,7 +308,7 @@ test.describe("tournament (/)", () => {
 
     const progress = page.getByTestId("tournament-progress");
     const before = (await progress.textContent()) ?? "";
-    expect(before).toMatch(/^Match \d+\/\d+$/);
+    expect(before).toMatch(/^Round \d+\/\d+ Match \d+\/\d+$/);
 
     // The left "Choose <font>" button advances to the next match.
     await page
@@ -287,6 +316,41 @@ test.describe("tournament (/)", () => {
       .first()
       .click();
     await expect(progress).not.toHaveText(before);
+  });
+
+  test("progress resets match count when advancing to a new round", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
+
+    const progress = page.getByTestId("tournament-progress");
+    await expect(progress).toHaveText(/^Round 1\/\d+ Match 1\/\d+$/);
+
+    for (let i = 0; i < 10; i++) {
+      if (((await progress.textContent()) ?? "").startsWith("Round 2/")) break;
+      await page.keyboard.press("ArrowLeft");
+    }
+
+    await expect(progress).toHaveText(/^Round 2\/\d+ Match 1\/\d+$/);
+  });
+
+  test("single elimination total rounds uses all selected fonts", async ({
+    page,
+  }) => {
+    await expectSingleEliminationRoundCount(
+      page,
+      codingFonts.map((font) => font.family),
+    );
+  });
+
+  test("single elimination total rounds rounds up for one less than all fonts", async ({
+    page,
+  }) => {
+    const selectedFamilies = codingFonts
+      .slice(0, codingFonts.length - 1)
+      .map((font) => font.family);
+    await expectSingleEliminationRoundCount(page, selectedFamilies);
   });
 
   test("mobile nav menu: hamburger reveals Tournament/Browse links", async ({
