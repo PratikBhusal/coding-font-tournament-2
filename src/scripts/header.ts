@@ -31,6 +31,9 @@ export function initHeader() {
       } catch {
         /* ignore */
       }
+      window.dispatchEvent(
+        new CustomEvent("app:color-scheme-change", { detail: { dark } }),
+      );
     });
   }
 }

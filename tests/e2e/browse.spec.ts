@@ -7,6 +7,12 @@ async function closeSidebar(page: Page) {
   await expect(page.locator("#app-sidebar")).toHaveCSS("width", "0px");
 }
 
+async function faviconSvg(page: Page) {
+  const href = await page.locator('link[rel="icon"]').getAttribute("href");
+  expect(href).toContain("data:image/svg+xml,");
+  return decodeURIComponent(href!.split(",", 2)[1]);
+}
+
 test.describe("browse (/browse)", () => {
   test("renders static highlighted code (no island)", async ({ page }) => {
     await page.goto("browse");
@@ -185,5 +191,24 @@ test.describe("browse (/browse)", () => {
       "data-code-theme",
       "hc-light",
     );
+  });
+
+  test("theme toggle updates the favicon colors", async ({ page }) => {
+    await page.addInitScript(() =>
+      window.localStorage.setItem("colorScheme", "light"),
+    );
+    await page.goto("browse");
+
+    await expect(page.locator("html")).not.toHaveClass(/dark/);
+    const lightFavicon = await faviconSvg(page);
+    expect(lightFavicon).toMatch(/<rect[^>]+fill="oklch\(0\.97 0 0\)"/);
+    expect(lightFavicon).toMatch(/<text[^>]+fill="oklch\(0\.2 0 0\)"/);
+
+    await page.getByRole("button", { name: "Toggle theme" }).click();
+
+    await expect(page.locator("html")).toHaveClass(/dark/);
+    const darkFavicon = await faviconSvg(page);
+    expect(darkFavicon).toMatch(/<rect[^>]+fill="oklch\(0\.2 0 0\)"/);
+    expect(darkFavicon).toMatch(/<text[^>]+fill="oklch\(0\.97 0 0\)"/);
   });
 });
