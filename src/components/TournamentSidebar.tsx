@@ -16,18 +16,18 @@ type TournamentSidebarProps = {
 };
 
 const fieldClass =
-  "min-h-9 rounded-md border border-slate-300 bg-white px-3 dark:border-slate-700 dark:bg-slate-950";
+  "min-h-9 rounded-md border border-surface-300 bg-white px-3 dark:border-surface-700 dark:bg-surface-900";
 const buttonClass =
-  "inline-flex min-h-9 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md border border-slate-300 px-3 py-2 transition-transform hover:bg-slate-200 active:scale-95 active:bg-slate-300 dark:border-slate-700 dark:hover:bg-slate-800 dark:active:bg-slate-700";
+  "inline-flex min-h-9 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md border border-surface-300 px-3 py-2 transition-transform hover:bg-surface-200 active:scale-95 active:bg-surface-300 dark:border-surface-700 dark:hover:bg-surface-800 dark:active:bg-surface-700";
 const labelClass =
-  "text-sm font-bold uppercase tracking-wide text-slate-600 dark:text-slate-400";
+  "text-sm font-bold uppercase tracking-wide text-surface-600 dark:text-surface-400";
 
 function PoolHeader(props: { fonts: CodingFont[] }) {
   const selectedFonts = useStore($selectedFonts);
   return (
     <div class="flex items-center justify-between gap-2">
       <span class={labelClass}>Font Pool</span>
-      <span class="text-sm text-slate-600 dark:text-slate-400">
+      <span class="text-surface-600 dark:text-surface-400 text-sm">
         {selectedFonts().length}/{props.fonts.length}
       </span>
     </div>
@@ -116,20 +116,20 @@ function ImportList(props: { fonts: CodingFont[] }) {
   return (
     <>
       <textarea
-        class="min-h-24 rounded-md border border-slate-300 bg-white p-3 dark:border-slate-700 dark:bg-slate-950"
+        class="border-surface-300 dark:border-surface-700 dark:bg-surface-900 min-h-24 rounded-md border bg-white p-3"
         placeholder="Paste font names"
         value={importText()}
         onInput={(event) => setImportText(event.currentTarget.value)}
       />
       <button
-        class="min-h-9 rounded-md border border-slate-300 px-3 py-2 hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:hover:bg-slate-800"
+        class="border-surface-300 hover:bg-surface-200 dark:border-surface-700 dark:hover:bg-surface-800 min-h-9 rounded-md border px-3 py-2 disabled:cursor-not-allowed disabled:opacity-50"
         disabled={!importText().trim()}
         onClick={importFonts}
       >
         Import list
       </button>
       <Show when={importMessage()}>
-        <span class="text-sm text-slate-600 dark:text-slate-400">
+        <span class="text-surface-600 dark:text-surface-400 text-sm">
           {importMessage()}
         </span>
       </Show>
@@ -143,7 +143,7 @@ function EliminationSelect() {
     <label class="flex flex-col gap-1 text-sm">
       <span class={labelClass}>Elimination</span>
       <select
-        class="min-h-9 rounded-md border border-slate-300 bg-white px-2 dark:border-slate-700 dark:bg-slate-950"
+        class="border-surface-300 dark:border-surface-700 dark:bg-surface-900 min-h-9 rounded-md border bg-white px-2"
         value={eliminationMode()}
         onInput={(event) =>
           $eliminationMode.set(
@@ -166,7 +166,7 @@ function StartButton() {
   }
   return (
     <button
-      class="inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-blue-600 px-4 font-semibold text-white transition-transform hover:bg-blue-500 active:scale-95 active:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+      class="bg-primary-600 hover:bg-primary-500 active:bg-primary-700 inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-md px-4 font-semibold text-white transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
       disabled={!canStart()}
       onClick={startTournament}
     >
@@ -201,9 +201,9 @@ function FontList(props: { fonts: CodingFont[]; query: Accessor<string> }) {
     <div class="flex flex-col gap-2">
       <For each={filtered()}>
         {(font) => (
-          <label class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 hover:bg-slate-200 dark:hover:bg-slate-800">
+          <label class="hover:bg-surface-200 dark:hover:bg-surface-800 flex cursor-pointer items-center gap-2 rounded-md px-2 py-1">
             <input
-              class="h-4 w-4 accent-blue-600"
+              class="accent-primary-600 h-4 w-4"
               type="checkbox"
               checked={selectedFamilySet().has(font.family)}
               onInput={() => toggle(font.family)}

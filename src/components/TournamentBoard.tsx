@@ -180,13 +180,13 @@ function ControlsBar(props: {
   const segmentClass = (active: boolean) =>
     `px-3 py-1 transition-transform active:scale-95 ${
       active
-        ? "bg-blue-600 text-white"
-        : "bg-transparent text-slate-700 hover:bg-slate-200 dark:text-slate-200 dark:hover:bg-slate-800"
+        ? "bg-primary-600 text-white"
+        : "bg-transparent text-surface-700 hover:bg-surface-200 dark:text-surface-200 dark:hover:bg-surface-800"
     }`;
   return (
-    <div class="flex items-center gap-4 border-b border-slate-300 px-4 py-2 text-sm dark:border-slate-700">
+    <div class="border-surface-300 dark:border-surface-700 flex items-center gap-4 border-b px-4 py-2 text-sm">
       <Show when={!props.champion()}>
-        <div class="inline-flex overflow-hidden rounded-md border border-slate-300 dark:border-slate-700">
+        <div class="border-surface-300 dark:border-surface-700 inline-flex overflow-hidden rounded-md border">
           <button
             type="button"
             aria-pressed={viewMode() === "split"}
@@ -206,7 +206,7 @@ function ControlsBar(props: {
         </div>
         <label class="flex items-center gap-2">
           <input
-            class="h-4 w-4 accent-blue-600"
+            class="accent-primary-600 h-4 w-4"
             type="checkbox"
             checked={showName()}
             onInput={(event) => $showName.set(event.currentTarget.checked)}
@@ -252,7 +252,7 @@ function PlayerCard(props: {
             <div
               role="button"
               tabIndex={0}
-              class="relative flex max-h-full min-h-0 cursor-pointer flex-col overflow-hidden rounded-lg border-2 border-transparent text-left hover:border-blue-500 focus-visible:border-blue-500 focus-visible:outline-none"
+              class="hover:border-primary-500 focus-visible:border-primary-500 relative flex max-h-full min-h-0 cursor-pointer flex-col overflow-hidden rounded-lg border-2 border-transparent text-left focus-visible:outline-none"
               onClick={() => props.onChoose(font(), chooseButton)}
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
@@ -276,14 +276,14 @@ function PlayerCard(props: {
                 }}
                 type="button"
                 tabIndex={-1}
-                class="absolute bottom-6 left-1/2 z-10 inline-flex -translate-x-1/2 items-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-semibold text-white shadow-lg transition-transform hover:bg-blue-500 active:scale-95 active:bg-blue-700 active:shadow-md"
+                class="bg-primary-600 hover:bg-primary-500 active:bg-primary-700 -translate-x-1/2 absolute bottom-6 left-1/2 z-10 inline-flex items-center gap-2 rounded-md px-4 py-2 font-semibold text-white shadow-lg transition-transform active:scale-95 active:shadow-md"
                 onClick={(event) => {
                   event.stopPropagation();
                   props.onChoose(font(), chooseButton);
                 }}
               >
                 Choose or press
-                <kbd class="rounded border border-slate-700 bg-slate-900 px-1.5 py-0.5 text-xs text-white">
+                <kbd class="border-surface-700 bg-surface-900 rounded border px-1.5 py-0.5 text-xs text-white">
                   {arrow()}
                 </kbd>
               </button>
@@ -320,7 +320,7 @@ function WinnerView(props: {
     <div class="col-span-full flex min-h-0 flex-col gap-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div class="text-sm tracking-wide text-slate-500 uppercase dark:text-slate-400">
+          <div class="text-surface-500 dark:text-surface-400 text-sm tracking-wide uppercase">
             Winner
           </div>
           <a
@@ -333,7 +333,7 @@ function WinnerView(props: {
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <button
-            class="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-md border border-slate-300 px-4 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+            class="border-surface-300 hover:bg-surface-100 dark:border-surface-700 dark:hover:bg-surface-800 inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-md border px-4"
             onClick={props.onNewRun}
           >
             <span class="icon-[lucide--rotate-ccw] h-4 w-4" />
@@ -341,7 +341,7 @@ function WinnerView(props: {
           </button>
           <button
             type="button"
-            class="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-md border border-slate-300 px-4 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+            class="border-surface-300 hover:bg-surface-100 dark:border-surface-700 dark:hover:bg-surface-800 inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-md border px-4"
             onClick={props.onDownload}
           >
             <span class="icon-[lucide--download] h-4 w-4" />
@@ -352,7 +352,7 @@ function WinnerView(props: {
       <Specimen
         font={props.winner}
         highlighted={props.highlighted}
-        class="min-h-0 overflow-hidden rounded-lg border border-slate-300 dark:border-slate-700"
+        class="border-surface-300 dark:border-surface-700 min-h-0 overflow-hidden rounded-lg border"
       />
     </div>
   );
@@ -573,12 +573,12 @@ export default function TournamentBoard(props: TournamentBoardProps) {
               <button
                 ref={(element) => (leftButton = element)}
                 type="button"
-                class="flex min-w-0 items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-semibold text-white shadow-lg transition-transform hover:bg-blue-500 active:scale-95 active:bg-blue-700 active:shadow-md"
+                class="bg-primary-600 hover:bg-primary-500 active:bg-primary-700 flex min-w-0 items-center justify-center gap-2 rounded-md px-4 py-2 font-semibold text-white shadow-lg transition-transform active:scale-95 active:shadow-md"
                 onClick={(event) =>
                   board.chooseWinner(board.leftPlayer()!, event.currentTarget)
                 }
               >
-                <kbd class="rounded border border-slate-700 bg-slate-900 px-1.5 py-0.5 text-xs text-white">
+                <kbd class="border-surface-700 bg-surface-900 rounded border px-1.5 py-0.5 text-xs text-white">
                   ←
                 </kbd>
                 <ChooseButtonLabel side="A" font={board.leftPlayer()!} />
@@ -586,13 +586,13 @@ export default function TournamentBoard(props: TournamentBoardProps) {
               <button
                 ref={(element) => (rightButton = element)}
                 type="button"
-                class="flex min-w-0 items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-semibold text-white shadow-lg transition-transform hover:bg-blue-500 active:scale-95 active:bg-blue-700 active:shadow-md"
+                class="bg-primary-600 hover:bg-primary-500 active:bg-primary-700 flex min-w-0 items-center justify-center gap-2 rounded-md px-4 py-2 font-semibold text-white shadow-lg transition-transform active:scale-95 active:shadow-md"
                 onClick={(event) =>
                   board.chooseWinner(board.rightPlayer()!, event.currentTarget)
                 }
               >
                 <ChooseButtonLabel side="B" font={board.rightPlayer()!} />
-                <kbd class="rounded border border-slate-700 bg-slate-900 px-1.5 py-0.5 text-xs text-white">
+                <kbd class="border-surface-700 bg-surface-900 rounded border px-1.5 py-0.5 text-xs text-white">
                   →
                 </kbd>
               </button>

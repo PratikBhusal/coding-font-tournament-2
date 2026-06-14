@@ -95,7 +95,7 @@ function toHexColor(color: string) {
 }
 
 function getStandardThemeColor(themeVariable: string) {
-  // The palette lives in standardTheme.css as `:root` custom properties (OKLCH).
+  // The palette lives in global.css as Tailwind theme custom properties (OKLCH).
   // Resolve the current value, then emit hex so the exported SVG is self-contained
   // and portable to viewers without OKLCH support.
   const value = getComputedStyle(document.documentElement)
@@ -247,12 +247,12 @@ function createSvgMetrics(fontSize: number) {
 function createSvgColors() {
   return {
     strokeColor: getStandardThemeColor("--color-primary-500"),
-    textColor: getStandardThemeColor("--theme-font-color-base"),
+    textColor: toHexColor("oklch(0.2046 0 0)"),
     primaryTextColor: getStandardThemeColor("--color-primary-700"),
     surfaceColor: getStandardThemeColor("--color-surface-50"),
     winnerColor: getStandardThemeColor("--color-primary-100"),
     winnerStrokeColor: getStandardThemeColor("--color-primary-600"),
-    onPrimaryTextColor: getStandardThemeColor("--on-primary"),
+    onPrimaryTextColor: toHexColor("oklch(1 0 0)"),
   };
 }
 

@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "./standardTheme.css";
 @plugin "@iconify/tailwind4";
 /*
  * Class-based dark mode. Redefines Tailwind's `dark:` variant to match an explicit
@@ -9,63 +8,30 @@
  */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/*
- * Maps Tailwind's color tokens to the `--*` custom properties defined in
- * standardTheme.css. The indirection lets the palette be swapped in one place
- * without touching utility class names across the app.
- */
 @theme {
-  --color-blue-50: var(--color-primary-50);
-  --color-blue-100: var(--color-primary-100);
-  --color-blue-200: var(--color-primary-200);
-  --color-blue-300: var(--color-primary-300);
-  --color-blue-400: var(--color-primary-400);
-  --color-blue-500: var(--color-primary-500);
-  --color-blue-600: var(--color-primary-600);
-  --color-blue-700: var(--color-primary-700);
-  --color-blue-800: var(--color-primary-800);
-  --color-blue-900: var(--color-primary-900);
-  --color-blue-950: var(--color-primary-900);
+  /* primary | #6366f1 */
+  --color-primary-50: oklch(0.9373 0.0282 285.8422); /* #e8e8fd */
+  --color-primary-100: oklch(0.9153 0.038 285.6259); /* #e0e0fc */
+  --color-primary-200: oklch(0.8955 0.0478 284.0921); /* #d8d9fc */
+  --color-primary-300: oklch(0.8321 0.0768 283.7855); /* #c1c2f9 */
+  --color-primary-400: oklch(0.7059 0.1403 281.278); /* #9294f5 */
+  --color-primary-500: oklch(0.5854 0.2041 277.1173); /* #6366f1 */
+  --color-primary-600: oklch(0.543 0.1872 277.1284); /* #595cd9 */
+  --color-primary-700: oklch(0.4777 0.1613 277.1423); /* #4a4db5 */
+  --color-primary-800: oklch(0.4082 0.1356 277.5199); /* #3b3d91 */
+  --color-primary-900: oklch(0.3572 0.1138 278.3147); /* #313276 */
 
-  --color-slate-50: var(--color-surface-50);
-  --color-slate-100: var(--color-surface-100);
-  --color-slate-200: var(--color-surface-200);
-  --color-slate-300: var(--color-surface-300);
-  --color-slate-400: var(--color-surface-400);
-  --color-slate-500: var(--color-surface-500);
-  --color-slate-600: var(--color-surface-600);
-  --color-slate-700: var(--color-surface-700);
-  --color-slate-800: var(--color-surface-800);
-  --color-slate-900: var(--color-surface-900);
-  --color-slate-950: var(--color-surface-900);
-
-  --color-primary: var(--color-primary-500);
-  --color-primary-foreground: var(--on-primary);
-  --color-secondary: var(--color-secondary-100);
-  --color-secondary-foreground: var(--on-secondary);
-  --color-background: var(--color-surface-50);
-  --color-foreground: var(--theme-font-color-base);
-  --color-card: var(--on-primary);
-  --color-card-foreground: var(--theme-font-color-base);
-  --color-muted: var(--color-surface-100);
-  --color-muted-foreground: var(--color-surface-500);
-  --color-border: var(--color-surface-300);
-  --color-input: var(--color-surface-300);
-  --color-ring: var(--color-primary-500);
-  --radius-md: var(--theme-rounded-base);
-}
-
-.dark {
-  --color-background: var(--color-surface-900);
-  --color-foreground: var(--theme-font-color-dark);
-  --color-card: var(--color-surface-800);
-  --color-card-foreground: var(--theme-font-color-dark);
-  --color-muted: var(--color-surface-800);
-  --color-muted-foreground: var(--color-surface-400);
-  --color-secondary: var(--color-secondary-800);
-  --color-secondary-foreground: var(--theme-font-color-dark);
-  --color-border: var(--color-surface-700);
-  --color-input: var(--color-surface-700);
+  /* surface | #9ca3af */
+  --color-surface-50: oklch(0.9846 0.0017 247.8389); /* #F9FAFB */
+  --color-surface-100: oklch(0.967 0.0029 264.5419); /* #f3f4f6 */
+  --color-surface-200: oklch(0.9276 0.0058 264.5313); /* #e5e7eb */
+  --color-surface-300: oklch(0.8717 0.0093 258.3382); /* #d1d5db */
+  --color-surface-400: oklch(0.7137 0.0192 261.3246); /* #9ca3af */
+  --color-surface-500: oklch(0.4461 0.0263 256.8018); /* #4b5563 */
+  --color-surface-600: oklch(0.3729 0.0306 259.7328); /* #374151 */
+  --color-surface-700: oklch(0.2781 0.0296 256.848); /* #1f2937 */
+  --color-surface-800: oklch(0.2101 0.0318 264.6645); /* #111827 */
+  --color-surface-900: oklch(0.1296 0.0274 261.6924); /* #030712 */
 }
 
 /*

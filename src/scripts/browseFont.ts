@@ -68,8 +68,8 @@ function updateCompareLinks() {
 function highlightRow(active: HTMLElement) {
   for (const row of document.querySelectorAll<HTMLElement>("tr[data-family]")) {
     const on = row === active;
-    row.classList.toggle("bg-blue-100", on);
-    row.classList.toggle("dark:bg-blue-900/40", on);
+    row.classList.toggle("bg-primary-100", on);
+    row.classList.toggle("dark:bg-primary-900/40", on);
   }
 }
 

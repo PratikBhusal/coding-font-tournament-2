@@ -42,7 +42,7 @@ const {
 } = Astro.props;
 
 const dividerClass = divider
-  ? "border-r border-slate-300 dark:border-slate-700"
+  ? "border-r border-surface-300 dark:border-surface-700"
   : "";
 
 const Tag = as;
@@ -50,7 +50,7 @@ const attrs: Record<string, unknown> = {
   id,
   title,
   class:
-    `inline-flex items-center hover:bg-slate-100 dark:hover:bg-slate-800 ${dividerClass} ${className}`.trim(),
+    `inline-flex items-center hover:bg-surface-100 dark:hover:bg-surface-800 ${dividerClass} ${className}`.trim(),
   ...rest,
 };
 

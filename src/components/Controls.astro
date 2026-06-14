@@ -6,14 +6,14 @@ const sortedThemes = getSortedCodeThemes();
 ---
 
 <div
-  class="flex w-full flex-row gap-4 overflow-x-auto border-b border-slate-300 bg-slate-100 px-4 py-2 text-sm whitespace-nowrap dark:border-slate-700 dark:bg-slate-900"
+  class="border-surface-300 bg-surface-100 dark:border-surface-700 dark:bg-surface-900 flex w-full flex-row gap-4 overflow-x-auto border-b px-4 py-2 text-sm whitespace-nowrap"
 >
   <slot />
   <label class="flex items-center gap-2">
     <span>Theme:</span>
     <select
       id="ctrl-theme"
-      class="min-h-9 min-w-24 rounded-md border border-slate-300 bg-white px-2 dark:border-slate-700 dark:bg-slate-950"
+      class="border-surface-300 dark:border-surface-700 dark:bg-surface-900 min-h-9 min-w-24 rounded-md border bg-white px-2"
     >
       {
         sortedThemes.map((theme) => (
@@ -26,7 +26,7 @@ const sortedThemes = getSortedCodeThemes();
     <span>Language:</span>
     <select
       id="ctrl-language"
-      class="min-h-9 min-w-28 rounded-md border border-slate-300 bg-white px-2 dark:border-slate-700 dark:bg-slate-950"
+      class="border-surface-300 dark:border-surface-700 dark:bg-surface-900 min-h-9 min-w-28 rounded-md border bg-white px-2"
     >
       {
         sampleLanguages.map((language) => (
@@ -39,14 +39,14 @@ const sortedThemes = getSortedCodeThemes();
     <span>Font Size:</span>
     <input
       id="ctrl-font-size-number"
-      class="min-h-9 w-16 rounded-md border border-slate-300 bg-white px-2 dark:border-slate-700 dark:bg-slate-950"
+      class="border-surface-300 dark:border-surface-700 dark:bg-surface-900 min-h-9 w-16 rounded-md border bg-white px-2"
       type="number"
       min="8"
       max="36"
     />
     <input
       id="ctrl-font-size-range"
-      class="w-40 accent-blue-600 lg:w-60"
+      class="accent-primary-600 w-40 lg:w-60"
       type="range"
       max="36"
       min="8"
@@ -56,13 +56,17 @@ const sortedThemes = getSortedCodeThemes();
   <label class="flex items-center gap-2">
     <input
       id="ctrl-ligatures"
-      class="h-4 w-4 accent-blue-600"
+      class="accent-primary-600 h-4 w-4"
       type="checkbox"
     />
     <span>Font Ligatures</span>
   </label>
   <label class="flex items-center gap-2">
-    <input id="ctrl-opentype" class="h-4 w-4 accent-blue-600" type="checkbox" />
+    <input
+      id="ctrl-opentype"
+      class="accent-primary-600 h-4 w-4"
+      type="checkbox"
+    />
     <span>OpenType Features</span>
   </label>
 </div>
