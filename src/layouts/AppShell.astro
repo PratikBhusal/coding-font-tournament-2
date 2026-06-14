@@ -14,12 +14,12 @@ const { sidebarDefaultOpen = false, sidebarTestId } = Astro.props;
 >
   <slot name="header" />
   <slot name="controls" />
-  <div class="relative flex min-h-0 min-w-0">
+  <div class="relative flex h-full min-h-0 min-w-0 overflow-hidden">
     <aside
       id="app-sidebar"
       data-testid={sidebarTestId}
       data-default-open={sidebarDefaultOpen ? "1" : "0"}
-      class="relative z-20 min-w-0 overflow-hidden"
+      class="relative z-20 h-full min-w-0 shrink-0 overflow-hidden"
       style={`width: ${sidebarDefaultOpen ? "clamp(12rem, 33vw, 99vw)" : "0px"}`}
     >
       <div
@@ -27,18 +27,18 @@ const { sidebarDefaultOpen = false, sidebarTestId } = Astro.props;
         class="border-surface-300 bg-surface-100 dark:border-surface-700 dark:bg-surface-900 absolute inset-0 flex [scrollbar-width:thin] flex-col gap-4 overflow-auto border-r p-4 pr-5"
       >
         <slot name="sidebar" />
-        <button
-          id="app-sidebar-resize"
-          type="button"
-          aria-label="Resize sidebar"
-          title="Drag to resize. Double-click to reset width."
-          class="group absolute top-0 right-0 hidden h-full w-3 cursor-col-resize touch-none lg:block"
-        >
-          <span
-            class="group-hover:bg-primary-500 group-active:bg-primary-600 bg-surface-300 dark:bg-surface-600 absolute top-0 right-0 h-full w-1"
-          ></span>
-        </button>
       </div>
+      <button
+        id="app-sidebar-resize"
+        type="button"
+        aria-label="Resize sidebar"
+        title="Drag to resize. Double-click to reset width."
+        class="group absolute top-0 right-0 hidden h-full w-3 cursor-col-resize touch-none lg:block"
+      >
+        <span
+          class="group-hover:bg-primary-500 group-active:bg-primary-600 bg-surface-300 dark:bg-surface-600 absolute top-0 right-0 h-full w-1"
+        ></span>
+      </button>
     </aside>
     <main class="min-h-0 min-w-0 flex-1 overflow-hidden"><slot /></main>
   </div>
