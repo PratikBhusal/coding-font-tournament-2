@@ -13,16 +13,12 @@ test.describe("tournament mobile (/)", () => {
     await expect(sidebar).toHaveCSS("width", `${page.viewportSize()!.width}px`);
   });
 
-  test("hamburger reveals Tournament/Browse links", async ({ page }) => {
+  test("native navigation select navigates to Browse", async ({ page }) => {
     await page.goto("./");
-    const navToggle = page.locator("#app-nav-toggle");
-    const navMenu = page.locator("#app-nav-menu");
+    const navSelect = page.locator("#app-nav-select");
 
-    await expect(navToggle).toBeVisible();
-    await expect(navMenu).toBeHidden();
-    await navToggle.click();
-    await expect(navMenu).toBeVisible();
-    await navMenu.getByRole("link", { name: "Browse" }).click();
+    await expect(navSelect).toBeVisible();
+    await navSelect.selectOption({ label: "Browse" });
     await expect(page).toHaveURL(/\/browse$/);
   });
 });

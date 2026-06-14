@@ -23,9 +23,9 @@ test.describe("tournament desktop (/)", () => {
     await expect(sidebar).not.toHaveCSS("width", "0px");
   });
 
-  test("mobile nav toggle is hidden", async ({ page }) => {
+  test("mobile nav select is hidden", async ({ page }) => {
     await page.goto("./");
-    await expect(page.locator("#app-nav-toggle")).toBeHidden();
+    await expect(page.locator("#app-nav-select")).toBeHidden();
   });
 
   test("split view responds to sidebar width, not only viewport width", async ({
