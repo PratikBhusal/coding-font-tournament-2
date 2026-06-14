@@ -2,19 +2,12 @@ import {
   type Accessor,
   createMemo,
   createSignal,
-  For,
   onCleanup,
   onMount,
   Show,
 } from "solid-js";
 import { useStore } from "../lib/useStore";
 import type { CodingFont } from "../lib/codingFonts";
-import {
-  getCssFontFamily,
-  getFontDisplayName,
-  getFontFeatures,
-  getFontStyle,
-} from "../lib/fontFeatures";
 import {
   createConfetti,
   createGame,
@@ -23,9 +16,8 @@ import {
   type TournamentMatch,
   type TournamentResult,
 } from "../lib/game";
-import { getFontPath } from "../lib/routes";
 import { getFontSize } from "../lib/appearance";
-import { sampleLanguages, type SampleLanguage } from "../lib/sampleCode";
+import type { SampleLanguage } from "../lib/sampleCode";
 import type { HighlightedLines } from "../lib/highlight";
 import {
   createTournamentSvg,
@@ -40,21 +32,22 @@ import {
   $eliminationMode,
   $savedTournamentResult,
   $selectedFonts,
-  $showName,
   $viewMode,
   TOURNAMENT_START_EVENT,
 } from "../lib/tournamentStore";
+import { ChampionView } from "./ChampionView";
+import { ControlsBar } from "./ControlsBar";
+import type { ChooseWinner } from "./PlayerCard";
+import { SplitPlayerCards } from "./SplitPlayerCards";
+import type { Highlighted } from "./TournamentSpecimen";
+import { UnifiedPlayerCard } from "./UnifiedPlayerCard";
 
-type Highlighted = Record<SampleLanguage, string>;
 type HighlightedLinesMap = Record<SampleLanguage, HighlightedLines>;
 
 type TournamentBoardProps = {
   highlighted: Highlighted;
   highlightedLines: HighlightedLinesMap;
 };
-
-// `origin` is the element confetti bursts from (the card's Choose button).
-type ChooseWinner = (font: CodingFont, origin?: HTMLElement) => void;
 
 interface TournamentBoardController {
   progressLabel: Accessor<string>;
@@ -67,295 +60,6 @@ interface TournamentBoardController {
   downloadSvg: () => Promise<void>;
   /** Resume a previously completed tournament from storage. Returns false if none. */
   restoreSaved: () => boolean;
-}
-
-function specimenStyle(font: CodingFont) {
-  const featBoth = getFontFeatures(font, true, true) || "normal";
-  const featLig = getFontFeatures(font, false, true) || "normal";
-  const featOt = getFontFeatures(font, true, false) || "normal";
-  return `font-family: ${getCssFontFamily(font)}; --feat-both: ${featBoth}; --feat-lig: ${featLig}; --feat-ot: ${featOt}`;
-}
-
-function Specimen(props: {
-  font: CodingFont;
-  highlighted: Highlighted;
-  class?: string;
-}) {
-  return (
-    <div
-      class={`code-specimen flex max-h-full min-h-0 flex-col overflow-hidden ${props.class ?? ""}`}
-      style={specimenStyle(props.font)}
-    >
-      <For each={sampleLanguages}>
-        {(language) => (
-          <div
-            class="code-lang"
-            data-lang={language.id}
-            innerHTML={props.highlighted[language.id]}
-          />
-        )}
-      </For>
-    </div>
-  );
-}
-
-/**
- * One rendered row of the unified view: a neutral `A`/`B` gutter (which font the
- * row uses) followed by the line's code in `font`. font-family/features sit on the
- * row (`specimenStyle`); the gutter keeps its own font via CSS.
- */
-function UnifiedLine(props: {
-  font: CodingFont;
-  lineHtml: string;
-  label: string;
-}) {
-  return (
-    <span class="line unified-line" style={specimenStyle(props.font)}>
-      <span class="unified-line-label" aria-hidden="true">
-        {props.label}
-      </span>
-      <span innerHTML={props.lineHtml} />
-    </span>
-  );
-}
-
-/**
- * Unified view: one specimen per language where every source line is rendered
- * twice in a row — once in `fontA`, once in `fontB` — for stacked comparison.
- * Reuses the build-time per-line Shiki HTML (`HighlightedLines`) and rebuilds an
- * equivalent `<pre class="shiki">` so the existing theme/feature CSS still
- * applies. `specimenStyle` sets each line's font-family + `--feat-*` vars; the
- * `.unified-line` rules in global.css pick the active feature set and stack the
- * lines (display: block).
- */
-function UnifiedSpecimen(props: {
-  fontA: CodingFont;
-  fontB: CodingFont;
-  highlightedLines: HighlightedLinesMap;
-  class?: string;
-}) {
-  return (
-    <div
-      class={`code-specimen flex max-h-full min-h-0 flex-col overflow-hidden ${props.class ?? ""}`}
-    >
-      <For each={sampleLanguages}>
-        {(language) => {
-          const data = props.highlightedLines[language.id];
-          return (
-            <div class="code-lang" data-lang={language.id}>
-              <pre class={data.preClass} style={data.preStyle}>
-                <code>
-                  <For each={data.lines}>
-                    {(lineHtml) => (
-                      <>
-                        <UnifiedLine
-                          font={props.fontA}
-                          lineHtml={lineHtml}
-                          label="A"
-                        />
-                        <UnifiedLine
-                          font={props.fontB}
-                          lineHtml={lineHtml}
-                          label="B"
-                        />
-                      </>
-                    )}
-                  </For>
-                </code>
-              </pre>
-            </div>
-          );
-        }}
-      </For>
-    </div>
-  );
-}
-
-function ControlsBar(props: {
-  champion: Accessor<CodingFont | undefined>;
-  progressLabel: Accessor<string>;
-}) {
-  const showName = useStore($showName);
-  const viewMode = useStore($viewMode);
-  const segmentClass = (active: boolean) =>
-    `px-3 py-1 transition-transform active:scale-95 ${
-      active
-        ? "bg-primary-600 text-white"
-        : "bg-transparent text-surface-700 hover:bg-surface-200 dark:text-surface-200 dark:hover:bg-surface-800"
-    }`;
-  return (
-    <div class="border-surface-300 dark:border-surface-700 flex items-center gap-4 border-b px-4 py-2 text-sm">
-      <Show when={!props.champion()}>
-        <div class="border-surface-300 dark:border-surface-700 inline-flex overflow-hidden rounded-md border">
-          <button
-            type="button"
-            aria-pressed={viewMode() === "split"}
-            class={segmentClass(viewMode() === "split")}
-            onClick={() => $viewMode.set("split")}
-          >
-            Split
-          </button>
-          <button
-            type="button"
-            aria-pressed={viewMode() === "unified"}
-            class={segmentClass(viewMode() === "unified")}
-            onClick={() => $viewMode.set("unified")}
-          >
-            Unified
-          </button>
-        </div>
-        <label class="flex items-center gap-2">
-          <input
-            class="accent-primary-600 h-4 w-4"
-            type="checkbox"
-            checked={showName()}
-            onInput={(event) => $showName.set(event.currentTarget.checked)}
-          />
-          <span>Show Name</span>
-        </label>
-      </Show>
-      <Show when={props.progressLabel()}>
-        <span class="flex items-center" data-testid="tournament-progress">
-          {props.progressLabel()}
-        </span>
-      </Show>
-    </div>
-  );
-}
-
-function PlayerCard(props: {
-  player: Accessor<CodingFont | undefined>;
-  highlighted: Highlighted;
-  onChoose: ChooseWinner;
-  side: "left" | "right";
-  // Receives the Choose button so the board can originate confetti there (and the
-  // keyboard handler can reuse it). See chooseWinner.
-  ref?: (element: HTMLButtonElement) => void;
-}) {
-  const showName = useStore($showName);
-  let chooseButton: HTMLButtonElement | undefined;
-  const arrow = () => (props.side === "left" ? "←" : "→");
-
-  return (
-    <div class="flex min-h-0 flex-col gap-4">
-      <Show when={props.player()}>
-        {(font) => (
-          <>
-            <Show when={showName()}>
-              <div
-                class="flex min-h-9 items-center text-lg font-bold"
-                style={getFontStyle(font())}
-              >
-                {getFontDisplayName(font())}
-              </div>
-            </Show>
-            <div
-              role="button"
-              tabIndex={0}
-              class="hover:border-primary-500 focus-visible:border-primary-500 relative flex max-h-full min-h-0 cursor-pointer flex-col overflow-hidden rounded-lg border-2 border-transparent text-left focus-visible:outline-none"
-              onClick={() => props.onChoose(font(), chooseButton)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  props.onChoose(font(), chooseButton);
-                }
-              }}
-            >
-              <Specimen
-                font={font()}
-                highlighted={props.highlighted}
-                class="overflow-hidden rounded-md"
-              />
-              {/* Visible affordance mirroring the ←/→ keyboard shortcut. The card
-                  itself is the click target, so stop propagation to avoid choosing
-                  twice. tabIndex -1: the card already takes focus / Enter / Space. */}
-              <button
-                ref={(element) => {
-                  chooseButton = element;
-                  props.ref?.(element);
-                }}
-                type="button"
-                tabIndex={-1}
-                class="bg-primary-600 hover:bg-primary-500 active:bg-primary-700 -translate-x-1/2 absolute bottom-6 left-1/2 z-10 inline-flex items-center gap-2 rounded-md px-4 py-2 font-semibold text-white shadow-lg transition-transform active:scale-95 active:shadow-md"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  props.onChoose(font(), chooseButton);
-                }}
-              >
-                Choose or press
-                <kbd class="border-surface-700 bg-surface-900 rounded border px-1.5 py-0.5 text-xs text-white">
-                  {arrow()}
-                </kbd>
-              </button>
-            </div>
-          </>
-        )}
-      </Show>
-    </div>
-  );
-}
-
-function ChooseButtonLabel(props: { side: "A" | "B"; font: CodingFont }) {
-  const showName = useStore($showName);
-  const label = () => `Choose ${props.side}`;
-
-  return (
-    <Show
-      when={showName()}
-      fallback={<span class="whitespace-nowrap">{label()}</span>}
-    >
-      <span>{label()}:</span>
-      <span class="min-w-0 truncate">{getFontDisplayName(props.font)}</span>
-    </Show>
-  );
-}
-
-function WinnerView(props: {
-  winner: CodingFont;
-  highlighted: Highlighted;
-  onNewRun: () => void;
-  onDownload: () => void;
-}) {
-  return (
-    <div class="col-span-full flex min-h-0 flex-col gap-4">
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div class="text-surface-500 dark:text-surface-400 text-sm tracking-wide uppercase">
-            Winner
-          </div>
-          <a
-            href={getFontPath(props.winner.family)}
-            style={getFontStyle(props.winner)}
-            class="text-3xl font-bold hover:underline"
-          >
-            {getFontDisplayName(props.winner)}
-          </a>
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <button
-            class="border-surface-300 hover:bg-surface-100 dark:border-surface-700 dark:hover:bg-surface-800 inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-md border px-4"
-            onClick={props.onNewRun}
-          >
-            <span class="icon-[lucide--rotate-ccw] h-4 w-4" />
-            New Run
-          </button>
-          <button
-            type="button"
-            class="border-surface-300 hover:bg-surface-100 dark:border-surface-700 dark:hover:bg-surface-800 inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-md border px-4"
-            onClick={props.onDownload}
-          >
-            <span class="icon-[lucide--download] h-4 w-4" />
-            Download SVG
-          </button>
-        </div>
-      </div>
-      <Specimen
-        font={props.winner}
-        highlighted={props.highlighted}
-        class="border-surface-300 dark:border-surface-700 min-h-0 overflow-hidden rounded-lg border"
-      />
-    </div>
-  );
 }
 
 /**
@@ -511,7 +215,6 @@ export default function TournamentBoard(props: TournamentBoardProps) {
 
   const board = createTournamentBoard();
   const viewMode = useStore($viewMode);
-  const showName = useStore($showName);
   onMount(() =>
     runBoardLifecycle(board, () => ({ left: leftButton, right: rightButton })),
   );
@@ -522,83 +225,36 @@ export default function TournamentBoard(props: TournamentBoardProps) {
         champion={board.champion}
         progressLabel={board.progressLabel}
       />
-      <Show when={!board.champion() && viewMode() === "split"}>
-        <div class="@container min-h-0 flex-1 p-4">
-          <div class="grid h-full min-h-0 grid-cols-1 grid-rows-2 gap-4 @3xl:grid-cols-2 @3xl:grid-rows-1">
-            <PlayerCard
-              player={board.leftPlayer}
-              highlighted={props.highlighted}
-              onChoose={board.chooseWinner}
-              side="left"
-              ref={(element) => (leftButton = element)}
-            />
-            <PlayerCard
-              player={board.rightPlayer}
-              highlighted={props.highlighted}
-              onChoose={board.chooseWinner}
-              side="right"
-              ref={(element) => (rightButton = element)}
-            />
-          </div>
-        </div>
-      </Show>
-      <Show when={board.champion()}>
-        {(winner) => (
-          <div class="@container min-h-0 flex-1 p-4">
-            <div class="grid h-full min-h-0 grid-cols-1 grid-rows-1 gap-4 @3xl:grid-cols-2 @3xl:grid-rows-1">
-              <WinnerView
-                winner={winner()}
-                highlighted={props.highlighted}
-                onNewRun={() => board.startGame(false)}
-                onDownload={board.downloadSvg}
-              />
-            </div>
-          </div>
+      <Show
+        when={!board.champion()}
+        fallback={
+          <ChampionView
+            winner={board.champion()!}
+            highlighted={props.highlighted}
+            onNewRun={() => board.startGame(false)}
+            onDownload={board.downloadSvg}
+          />
+        }
+      >
+        {viewMode() === "split" ? (
+          <SplitPlayerCards
+            leftPlayer={board.leftPlayer}
+            rightPlayer={board.rightPlayer}
+            highlighted={props.highlighted}
+            onChoose={board.chooseWinner}
+            onLeftButton={(element) => (leftButton = element)}
+            onRightButton={(element) => (rightButton = element)}
+          />
+        ) : (
+          <UnifiedPlayerCard
+            leftPlayer={board.leftPlayer}
+            rightPlayer={board.rightPlayer}
+            highlightedLines={props.highlightedLines}
+            onChoose={board.chooseWinner}
+            onLeftButton={(element) => (leftButton = element)}
+            onRightButton={(element) => (rightButton = element)}
+          />
         )}
-      </Show>
-      <Show when={!board.champion() && viewMode() === "unified"}>
-        <Show when={board.leftPlayer() && board.rightPlayer()}>
-          <div class="@container flex min-h-0 flex-1 flex-col gap-4 p-4">
-            <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg">
-              <UnifiedSpecimen
-                fontA={board.leftPlayer()!}
-                fontB={board.rightPlayer()!}
-                highlightedLines={props.highlightedLines}
-                class="overflow-hidden rounded-md"
-              />
-            </div>
-            <div
-              class={`grid shrink-0 grid-cols-1 gap-4 ${showName() ? "@3xl:grid-cols-2" : "@md:grid-cols-2"}`}
-            >
-              <button
-                ref={(element) => (leftButton = element)}
-                type="button"
-                class="bg-primary-600 hover:bg-primary-500 active:bg-primary-700 flex min-w-0 items-center justify-center gap-2 rounded-md px-4 py-2 font-semibold text-white shadow-lg transition-transform active:scale-95 active:shadow-md"
-                onClick={(event) =>
-                  board.chooseWinner(board.leftPlayer()!, event.currentTarget)
-                }
-              >
-                <kbd class="border-surface-700 bg-surface-900 rounded border px-1.5 py-0.5 text-xs text-white">
-                  ←
-                </kbd>
-                <ChooseButtonLabel side="A" font={board.leftPlayer()!} />
-              </button>
-              <button
-                ref={(element) => (rightButton = element)}
-                type="button"
-                class="bg-primary-600 hover:bg-primary-500 active:bg-primary-700 flex min-w-0 items-center justify-center gap-2 rounded-md px-4 py-2 font-semibold text-white shadow-lg transition-transform active:scale-95 active:shadow-md"
-                onClick={(event) =>
-                  board.chooseWinner(board.rightPlayer()!, event.currentTarget)
-                }
-              >
-                <ChooseButtonLabel side="B" font={board.rightPlayer()!} />
-                <kbd class="border-surface-700 bg-surface-900 rounded border px-1.5 py-0.5 text-xs text-white">
-                  →
-                </kbd>
-              </button>
-            </div>
-          </div>
-        </Show>
       </Show>
     </div>
   );
