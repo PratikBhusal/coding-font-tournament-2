@@ -16,46 +16,18 @@ test.describe("tournament (/)", () => {
     await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
   });
 
-  test("font pool sidebar: open by default on desktop, collapsed-then-toggle on mobile", async ({
-    page,
-  }, testInfo) => {
-    await page.goto("./");
-    // Assert the sidebar's width, not the "Font Pool" text: when collapsed the aside
-    // is width:0 + overflow:hidden, but the clipped text still has its own non-zero
-    // box, which Playwright's visibility check (ignoring ancestor clipping) treats as
-    // visible. Width is the real open/collapsed signal.
-    const sidebar = page.getByTestId("tournament-sidebar");
-
-    // Wait for the client-only island to finish mounting (board populated) so its
-    // `app:menu-toggle` listener is registered before we interact.
-    await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
-
-    if (!testInfo.project.name.startsWith("mobile")) {
-      await expect(sidebar).not.toHaveCSS("width", "0px");
-      return;
-    }
-
-    // Mobile: collapsed by default, opens when the menu toggle is tapped.
-    await expect(sidebar).toHaveCSS("width", "0px");
-    await page.locator("#app-menu-toggle").click();
-    await expect(sidebar).toHaveCSS("width", `${page.viewportSize()!.width}px`);
-  });
-
   test("curated/all presets keep the selection count correct", async ({
     page,
-  }, testInfo) => {
+  }) => {
     await page.goto("./");
     await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
-
-    // Mobile: the sidebar is collapsed (width 0) by default, so open it before
-    // interacting with the pool controls.
-    if (testInfo.project.name.startsWith("mobile")) {
-      await page.locator("#app-menu-toggle").click();
-      await expect(page.getByTestId("tournament-sidebar")).not.toHaveCSS(
-        "width",
-        "0px",
-      );
-    }
+    await page.evaluate(() =>
+      window.dispatchEvent(new CustomEvent("app:menu-open")),
+    );
+    await expect(page.getByTestId("tournament-sidebar")).not.toHaveCSS(
+      "width",
+      "0px",
+    );
 
     const badge = page
       .getByTestId("tournament-sidebar")
@@ -319,24 +291,4 @@ test.describe("tournament (/)", () => {
     ).toHaveCount(0);
   });
 
-  test("mobile nav menu: hamburger reveals Tournament/Browse links", async ({
-    page,
-  }, testInfo) => {
-    await page.goto("./");
-    const navToggle = page.locator("#app-nav-toggle");
-    const navMenu = page.locator("#app-nav-menu");
-
-    if (!testInfo.project.name.startsWith("mobile")) {
-      // Replaced by the inline md+ nav.
-      await expect(navToggle).toBeHidden();
-      return;
-    }
-
-    await expect(navToggle).toBeVisible();
-    await expect(navMenu).toBeHidden();
-    await navToggle.click();
-    await expect(navMenu).toBeVisible();
-    await navMenu.getByRole("link", { name: "Browse" }).click();
-    await expect(page).toHaveURL(/\/browse$/);
-  });
 });

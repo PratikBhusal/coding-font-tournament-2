@@ -13,6 +13,21 @@ async function setSidebarWidth(page: Page, width: number) {
 }
 
 test.describe("tournament desktop (/)", () => {
+  test("font pool sidebar is open by default", async ({ page }) => {
+    await page.goto("./");
+    const sidebar = page.getByTestId("tournament-sidebar");
+
+    // Assert the sidebar's width, not text visibility: collapsed width is the real
+    // signal because clipped descendants can still have non-zero boxes.
+    await expect(page.locator(".code-specimen .shiki").first()).toBeVisible();
+    await expect(sidebar).not.toHaveCSS("width", "0px");
+  });
+
+  test("mobile nav toggle is hidden", async ({ page }) => {
+    await page.goto("./");
+    await expect(page.locator("#app-nav-toggle")).toBeHidden();
+  });
+
   test("split view responds to sidebar width, not only viewport width", async ({
     page,
   }) => {
