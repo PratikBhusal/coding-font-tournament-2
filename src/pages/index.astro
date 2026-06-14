@@ -23,11 +23,10 @@ const highlightedLines = await highlightAllSampleLines();
     <canvas
       id="canvas"
       class="pointer-events-none fixed inset-0 z-50 h-full w-full"></canvas>
-    <!-- <TournamentBoard highlighted={highlighted} client:only="solid-js" /> -->
     <TournamentBoard
       highlighted={highlighted}
       highlightedLines={highlightedLines}
-      client:idle
+      client:load
     />
   </AppShell>
 </BaseLayout>
