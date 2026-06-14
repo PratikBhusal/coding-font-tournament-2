@@ -252,7 +252,7 @@ function PlayerCard(props: {
             <div
               role="button"
               tabIndex={0}
-              class="relative flex max-h-full min-h-0 cursor-pointer flex-col overflow-hidden rounded-lg border-2 border-slate-300 bg-white p-2 text-left hover:border-blue-500 focus-visible:border-blue-500 focus-visible:outline-none dark:border-slate-700 dark:bg-slate-950"
+              class="relative flex max-h-full min-h-0 cursor-pointer flex-col overflow-hidden rounded-lg border-2 border-transparent text-left hover:border-blue-500 focus-visible:border-blue-500 focus-visible:outline-none"
               onClick={() => props.onChoose(font(), chooseButton)}
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
@@ -567,7 +567,7 @@ export default function TournamentBoard(props: TournamentBoardProps) {
       >
         <Show when={board.leftPlayer() && board.rightPlayer()}>
           <div class="@container flex min-h-0 flex-1 flex-col gap-4 p-4">
-            <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border-2 border-slate-300 bg-white p-2 dark:border-slate-700 dark:bg-slate-950">
+            <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg">
               <UnifiedSpecimen
                 fontA={board.leftPlayer()!}
                 fontB={board.rightPlayer()!}
