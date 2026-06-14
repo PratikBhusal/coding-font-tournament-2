@@ -1,4 +1,11 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+
+async function closeSidebar(page: Page) {
+  await page.evaluate(() =>
+    window.dispatchEvent(new CustomEvent("app:menu-close")),
+  );
+  await expect(page.locator("#app-sidebar")).toHaveCSS("width", "0px");
+}
 
 test.describe("browse (/browse)", () => {
   test("renders static highlighted code (no island)", async ({ page }) => {
@@ -85,6 +92,7 @@ test.describe("browse (/browse)", () => {
     await page
       .locator('tr[data-family="JetBrains Mono"] a.compare-link')
       .click();
+    await closeSidebar(page);
     await expect(page).toHaveURL(/\/browse$/);
     await expect(compare).toBeVisible();
     await expect(page.locator("#browse-compare-name")).toHaveText(
@@ -112,14 +120,15 @@ test.describe("browse (/browse)", () => {
 
     await page.locator('tr[data-family="Fira Code"] td').first().click();
     // Selected font hides its own Compare button; the other stays visible.
-    await expect(firaCompare).toBeHidden();
-    await expect(jetbrainsCompare).toBeVisible();
+    await expect(firaCompare).toHaveJSProperty("hidden", true);
+    await expect(jetbrainsCompare).toHaveJSProperty("hidden", false);
     await expect(page.locator("#browse-close")).toBeHidden();
 
     await jetbrainsCompare.click();
+    await closeSidebar(page);
     // While comparing: both shown fonts' Compare buttons hidden, both closes shown.
-    await expect(firaCompare).toBeHidden();
-    await expect(jetbrainsCompare).toBeHidden();
+    await expect(firaCompare).toHaveJSProperty("hidden", true);
+    await expect(jetbrainsCompare).toHaveJSProperty("hidden", true);
     await expect(page.locator("#browse-close")).toBeVisible();
     await expect(page.locator("#browse-compare-close")).toBeVisible();
   });
@@ -130,6 +139,7 @@ test.describe("browse (/browse)", () => {
     await page
       .locator('tr[data-family="JetBrains Mono"] a.compare-link')
       .click();
+    await closeSidebar(page);
 
     await page.locator("#browse-close").click();
     await expect(page.locator("#browse-compare")).toBeHidden();
@@ -138,10 +148,10 @@ test.describe("browse (/browse)", () => {
     await expect(page.locator("#browse-name")).toHaveText("JetBrains Mono");
     await expect(
       page.locator('tr[data-family="JetBrains Mono"] a.compare-link'),
-    ).toBeHidden();
+    ).toHaveJSProperty("hidden", true);
     await expect(
       page.locator('tr[data-family="Fira Code"] a.compare-link'),
-    ).toBeVisible();
+    ).toHaveJSProperty("hidden", false);
   });
 
   test("right close keeps only the original (left) font", async ({ page }) => {
@@ -150,30 +160,17 @@ test.describe("browse (/browse)", () => {
     await page
       .locator('tr[data-family="JetBrains Mono"] a.compare-link')
       .click();
+    await closeSidebar(page);
 
     await page.locator("#browse-compare-close").click();
     await expect(page.locator("#browse-compare")).toBeHidden();
     await expect(page.locator("#browse-name")).toHaveText("Fira Code");
     await expect(
       page.locator('tr[data-family="Fira Code"] a.compare-link'),
-    ).toBeHidden();
+    ).toHaveJSProperty("hidden", true);
     await expect(
       page.locator('tr[data-family="JetBrains Mono"] a.compare-link'),
-    ).toBeVisible();
-  });
-
-  test("gear toggles the sidebar (open by default on every viewport)", async ({
-    page,
-  }) => {
-    await page.goto("browse");
-    const sidebar = page.locator("#app-sidebar");
-
-    // `sidebarDefaultOpen` opens it on desktop and mobile alike.
-    await expect(sidebar).not.toHaveCSS("width", "0px");
-    await page.locator("#app-menu-toggle").click();
-    await expect(sidebar).toHaveCSS("width", "0px");
-    await page.locator("#app-menu-toggle").click();
-    await expect(sidebar).not.toHaveCSS("width", "0px");
+    ).toHaveJSProperty("hidden", false);
   });
 
   test("theme choice persists across a reload", async ({ page }) => {

@@ -38,7 +38,7 @@ test.describe("tournament (/)", () => {
     // Mobile: collapsed by default, opens when the menu toggle is tapped.
     await expect(sidebar).toHaveCSS("width", "0px");
     await page.locator("#app-menu-toggle").click();
-    await expect(sidebar).not.toHaveCSS("width", "0px");
+    await expect(sidebar).toHaveCSS("width", `${page.viewportSize()!.width}px`);
   });
 
   test("curated/all presets keep the selection count correct", async ({

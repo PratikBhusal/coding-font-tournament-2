@@ -24,9 +24,21 @@ export default defineConfig({
   },
 
   projects: [
-    { name: "desktop-chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "desktop-firefox", use: { ...devices["Desktop Firefox"] } },
-    { name: "desktop-webkit", use: { ...devices["Desktop Safari"] } },
+    {
+      name: "desktop-chromium",
+      testIgnore: /.*\.mobile\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "desktop-firefox",
+      testIgnore: /.*\.mobile\.spec\.ts/,
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "desktop-webkit",
+      testIgnore: /.*\.mobile\.spec\.ts/,
+      use: { ...devices["Desktop Safari"] },
+    },
     // Tests treat any "mobile-*" project as mobile; everything else is desktop.
     // iPhone 15 runs WebKit — covers the mobile <select> change-event behavior.
     {
