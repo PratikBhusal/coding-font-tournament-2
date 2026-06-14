@@ -522,49 +522,41 @@ export default function TournamentBoard(props: TournamentBoardProps) {
         champion={board.champion}
         progressLabel={board.progressLabel}
       />
-      <Show
-        when={!board.champion() && viewMode() === "unified"}
-        fallback={
-          <div
-            class={`grid min-h-0 flex-1 grid-cols-1 gap-4 p-4 ${
-              board.champion()
-                ? "grid-rows-1 md:grid-cols-2"
-                : "grid-rows-2 md:grid-cols-2 md:grid-rows-1"
-            }`}
-          >
-            <Show
-              when={board.champion()}
-              fallback={
-                <>
-                  <PlayerCard
-                    player={board.leftPlayer}
-                    highlighted={props.highlighted}
-                    onChoose={board.chooseWinner}
-                    side="left"
-                    ref={(element) => (leftButton = element)}
-                  />
-                  <PlayerCard
-                    player={board.rightPlayer}
-                    highlighted={props.highlighted}
-                    onChoose={board.chooseWinner}
-                    side="right"
-                    ref={(element) => (rightButton = element)}
-                  />
-                </>
-              }
-            >
-              {(winner) => (
-                <WinnerView
-                  winner={winner()}
-                  highlighted={props.highlighted}
-                  onNewRun={() => board.startGame(false)}
-                  onDownload={board.downloadSvg}
-                />
-              )}
-            </Show>
+      <Show when={!board.champion() && viewMode() === "split"}>
+        <div class="@container min-h-0 flex-1 p-4">
+          <div class="grid h-full min-h-0 grid-cols-1 grid-rows-2 gap-4 @3xl:grid-cols-2 @3xl:grid-rows-1">
+            <PlayerCard
+              player={board.leftPlayer}
+              highlighted={props.highlighted}
+              onChoose={board.chooseWinner}
+              side="left"
+              ref={(element) => (leftButton = element)}
+            />
+            <PlayerCard
+              player={board.rightPlayer}
+              highlighted={props.highlighted}
+              onChoose={board.chooseWinner}
+              side="right"
+              ref={(element) => (rightButton = element)}
+            />
           </div>
-        }
-      >
+        </div>
+      </Show>
+      <Show when={board.champion()}>
+        {(winner) => (
+          <div class="@container min-h-0 flex-1 p-4">
+            <div class="grid h-full min-h-0 grid-cols-1 grid-rows-1 gap-4 @3xl:grid-cols-2 @3xl:grid-rows-1">
+              <WinnerView
+                winner={winner()}
+                highlighted={props.highlighted}
+                onNewRun={() => board.startGame(false)}
+                onDownload={board.downloadSvg}
+              />
+            </div>
+          </div>
+        )}
+      </Show>
+      <Show when={!board.champion() && viewMode() === "unified"}>
         <Show when={board.leftPlayer() && board.rightPlayer()}>
           <div class="@container flex min-h-0 flex-1 flex-col gap-4 p-4">
             <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg">
@@ -575,7 +567,9 @@ export default function TournamentBoard(props: TournamentBoardProps) {
                 class="overflow-hidden rounded-md"
               />
             </div>
-            <div class="grid shrink-0 grid-cols-1 gap-4 @md:grid-cols-2">
+            <div
+              class={`grid shrink-0 grid-cols-1 gap-4 ${showName() ? "@3xl:grid-cols-2" : "@md:grid-cols-2"}`}
+            >
               <button
                 ref={(element) => (leftButton = element)}
                 type="button"
